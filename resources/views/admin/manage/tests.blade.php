@@ -1,7 +1,7 @@
 @extends('admin.admin')
 
-@section('title', 'Dashboard')
+@section('title', 'Manage Tests')
 
 @section('content')
-    hello
+    hello tests
 @endsection

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->string('email')->unique();
-            $table->boolean('accepted');
+            $table->boolean('accepted')->default(0);
             $table->timestamps();
             $table->foreign('user_id')
                 ->references('id')

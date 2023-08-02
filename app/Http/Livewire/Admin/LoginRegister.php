@@ -22,13 +22,13 @@ class LoginRegister extends Component
         if ($this->showRegisterForm) {
             return [
                 'name' => ['required'],
-                'email' => ['required', 'email', 'unique:students,email'],
+                'email' => ['required', 'email', 'exists:admin_invitations,email', 'unique:users,email'],
                 'password' => ['required', 'min:8'],
                 'password_confirmation' => 'required_with:password|same:password|min:8'
             ];
         } else {
             return [
-                'email' => ['required', 'email', 'exists:students,email'],
+                'email' => ['required', 'email', 'exists:users,email'],
                 'password' => ['required'],
             ];
         }
