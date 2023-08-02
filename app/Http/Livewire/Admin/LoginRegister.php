@@ -1,10 +1,8 @@
 <?php
 
-namespace App\Http\Livewire\Student;
+namespace App\Http\Livewire\Admin;
 
-use App\Models\AdminInvitation;
-use App\Models\Grade;
-use App\Models\Student;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
@@ -13,7 +11,7 @@ class LoginRegister extends Component
 {
     protected $queryString = ['to'];
 
-    public $name, $grade, $email, $password, $password_confirmation;
+    public $name, $email, $password, $password_confirmation;
     public $showRegisterForm = false;
     public $errorMsg = null;
 
@@ -25,7 +23,6 @@ class LoginRegister extends Component
             return [
                 'name' => ['required'],
                 'email' => ['required', 'email', 'unique:students,email'],
-                'grade' => ['required', 'exists:grades,id'],
                 'password' => ['required', 'min:8'],
                 'password_confirmation' => 'required_with:password|same:password|min:8'
             ];
@@ -43,11 +40,11 @@ class LoginRegister extends Component
 
         $validated = $this->validate($this->rules());
 
-        if (Auth::guard('student')->attempt($validated)) {
+        if (Auth::attempt($validated)) {
             if (!is_null($this->to)) {
                 return redirect()->route($this->to);
             } else {
-                return redirect()->route('student.home');
+                return redirect()->route('admin.dashboard');
             }
         } else {
             $this->setErrorMsg('Credentials mismatch!');
@@ -60,9 +57,8 @@ class LoginRegister extends Component
 
         $validated = $this->validate($this->rules());
 
-        Student::create([
+        User::create([
             'name' => $validated['name'],
-            'grade_id' => $validated['grade'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
         ]);
@@ -71,7 +67,7 @@ class LoginRegister extends Component
     }
 
     public function logout() {
-        Auth::guard('student')->logout();
+        Auth::logout();
     }
 
     public function loginForm()
@@ -104,6 +100,6 @@ class LoginRegister extends Component
 
     public function render()
     {
-        return view('livewire.student.login-register')->with('grades', Grade::all());
+        return view('livewire.admin.login-register');
     }
 }

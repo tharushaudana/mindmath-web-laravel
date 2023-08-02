@@ -23,9 +23,10 @@
                         </div>
                         <div class="mb-3">
                             <select class="form-control @if($errors->has('grade')) is-invalid @endif" wire:model="grade" aria-describedby="validationGradeFeedback" required>
-                                <option value="">Select your Grade</option>
-                                <option value="1">Grade 5</option>
-                                <option value="2">Grade 6</option>
+                                <option value="">Select your Grade</option>                                
+                                @foreach ($grades as $grade)
+                                    <option value="{{ $grade->id }}">{{ $grade->name }}</option>
+                                @endforeach
                             </select>
                             <div id="validationGradeFeedback" class="invalid-feedback">
                             {{ $errors->first('grade') }}

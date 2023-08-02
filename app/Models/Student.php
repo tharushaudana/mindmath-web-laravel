@@ -16,4 +16,9 @@ class Student extends Authenticatable
         'password',
         'grade_id',
     ];
+
+    public function grade()
+    {
+        return $this->belongsTo(Grade::class);
+    }
 }
