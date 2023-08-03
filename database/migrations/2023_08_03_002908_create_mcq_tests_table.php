@@ -23,8 +23,9 @@ return new class extends Migration
             $table->unsignedInteger('nmultiply')->nullable(false);
             $table->unsignedInteger('ndivition')->nullable(false);
             //----
-            $table->string('operation_order')->default(null); // like "+,+,*,-" | NULL for random order
-            $table->string('digits_order')->default(null); // like "1,2,2,3,1" | NULL for random order
+            $table->string('operation_order')->nullable(true); // like "+,+,*,-" | NULL for random order
+            $table->string('digits_order')->nullable(false); // like "1,2,2,3,1"
+            //----
             $table->boolean('shuffle_digits_order')->default(0);
             $table->timestamps();
             $table->foreign('test_id')

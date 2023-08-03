@@ -17,38 +17,39 @@ class Tests extends Component
 
     protected function rules()
     {
-        $default = [
-            'test.name' => ['required', 'string'],
-            'test.test_type_id' => ['required', 'integer', 'exists:test_types,id'],
-            'test.grade_id' => ['nullable', 'integer', 'exists:grades,id'],
-            'test.max_attempts' => ['required', 'integer', 'min:1'],
-            'test.open_at' => ['nullable', 'date_format:Y-m-d H:i:s', 'after_or_equal:now'],
-            'test.close_at' => ['required', 'date_format:Y-m-d H:i:s', 'after:test.open_at', 'after:now'],
-        ];
-
-        if (!is_null($this->test->type)) {
-            if ($this->test->type->name == 'mcq') {
-                return array_merge($default, [
-                    'config.num_questions' => ['required', 'integer', 'min:1'],
-                ]);
-            }
-        }
-
-        return $default;
+        $rules = include 'rules.php';
+        if ($this->showConfigureTest) return $rules['config'][$this->test->type->name];
+        return $rules['test'];
     }
 
     public function createTest()
     {
         $this->validate();
-        
+
         $this->test->user_id = Auth::user()->id;
         $this->test->save();
-        
-        $this->clearAll();
 
         $this->showCreate(false);
 
         $this->fireAlert('success', 'Test has been created.');
+    }
+
+    public function configureTest() {
+        $this->validate();
+        
+        if ($this->test->type->name == 'mcq') {
+            if ($this->config->nplus + $this->config->nminus + $this->config->nmultiply + $this->config->ndivitions < 2) {
+                $this->fireAlert('error', 'The total operations count must be larger than 1.');
+                return;
+            }
+        }
+
+        $this->config->test_id = $this->test->id;
+        $this->config->save();
+
+        $this->showConfigure(false);
+
+        $this->fireAlert('success', 'Test has been configured.');
     }
 
     public function showCreate($show)
@@ -90,16 +91,19 @@ class Tests extends Component
         $this->validateOnly('test.close_at');
     }
 
-    private function fireAlert($type, $content) {
+    private function fireAlert($type, $content)
+    {
         $this->dispatchBrowserEvent('fire-alert', [
-            'type' => $type, 
+            'type' => $type,
             'content' => $content
         ]);
     }
 
-    private function clearAll() {
+    private function clearAll()
+    {
         $this->test = new Test();
-        $this->test->max_attempts = 1;        
+        $this->test->max_attempts = 1;
+        $this->resetErrorBag();
     }
 
     public function mount()
@@ -109,8 +113,8 @@ class Tests extends Component
 
     public function updated($name)
     {
+        // Because those set using 'setOpenAt()' & 'setCloseAt()'
         if ($name == 'test.open_at' || $name == 'test.close_at') return;
-
         $this->validateOnly($name);
     }
 

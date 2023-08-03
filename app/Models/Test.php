@@ -34,11 +34,16 @@ class Test extends Model
         if (is_null($type)) return null;
         
         if ($type->name == 'mcq') {
-            $c = McqTest::find($this->id, 'test_id');
+            $c = McqTest::where('test_id', $this->id)->first();
             
             if (is_null($c)) {
                 $new = new McqTest();
-                $new->test_id = $this->id;
+                $new->dur_extra = 0;
+                $new->nplus = 0;
+                $new->nminus = 0;
+                $new->nmultiply = 0;
+                $new->ndivition = 0;
+                $new->shuffle_digits_order = 0;
                 return $new;
             }
 

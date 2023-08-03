@@ -11,7 +11,7 @@
                         <h3 class="card-title">Recent Tests</h3>
                     </div>
                 </div>
-                <div class="card-body">
+                <div class="card-body" style="overflow-x: scroll;">
                     <table id="tableTests" class="table table-bordered table-hover">
                         <thead>
                             <tr>
@@ -26,18 +26,19 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($tests as $test)
-                            <tr>
-                                <td>{{ $test->id }}</td>
-                                <td>{{ $test->name }}</td>
-                                <td><span class="badge badge-info">{{ Str::upper($test->type->name) }}</span></td>
-                                <td><span class="badge badge-dark">{{ $test->grade ? $test->grade->name : 'Every Grades' }}</span></td>
-                                <td>{{ $test->max_attempts }}</td>
-                                <td>{{ $test->open_at }}</td>
-                                <td>{{ $test->close_at }}</td>
+                            @foreach ($tests as $t)
+                            <tr class="@if($t->id == $test->id) bg-warning @endif">
+                                <td>{{ $t->id }}</td>
+                                <td>{{ $t->name }}</td>
+                                <td><span class="badge badge-info">{{ Str::upper($t->type->name) }}</span></td>
+                                <td><span class="badge badge-dark">{{ $t->grade ? $t->grade->name : 'Every Grades' }}</span></td>
+                                <td>{{ $t->max_attempts }}</td>
+                                <td>{{ $t->open_at }}</td>
+                                <td>{{ $t->close_at }}</td>
                                 <td>
-                                    <button class="btn btn-secondary" wire:click.prevent="showConfigure(true, '{{ $test->id }}')">Configure</button>
-                                    @if ($test->config->id == null)
+                                    <button class="btn btn-secondary" wire:click.prevent="showConfigure(true, '{{ $t->id }}')">Configure</button>
+                                    
+                                    @if ($t->config->id == null)
                                     <br>
                                     <span class="text-danger" style="font-size: 10px;">*not configured yet</span>
                                     @endif
@@ -116,39 +117,19 @@
                     </div>    
                 </div>
             </div>
+
             <div class="card card-secondary @if (!$showConfigureTest) d-none @endif">
-                <div class="card-header border-0 bg-secondary">
+                <div class="card-header border-0 bg-warning">
                     <div class="d-flex justify-content-between">
-                        <h3 class="card-title">Configure Test</h3>
+                        <h3 class="card-title">Configure Test <b>#{{ $test->id }}</b></h3>
                     </div>
                 </div>
-                <div class="card-body">   
-                    <label>Number of Questions</label>
-                    <div class="input-group mb-3">
-                        <input type="number" class="form-control @if($errors->has('config.num_questions')) is-invalid @endif" wire:model="config.num_questions" placeholder="max attempts" value="1" min="1">
-                        <div class="invalid-feedback">
-                            {{ $errors->first('config.num_questions') }}
-                        </div>
-                    </div>
-                    <label>Open at <span class="text-muted">(leave empty for open after test when ready)</span></label>
-                    <div class="input-group mb-3">
-                        <input onchange="setOpenAt(this.value)" type="text" class="form-control datetimepicker @if($errors->has('test.open_at')) is-invalid @endif" wire:model="test.open_at">
-                        <div class="invalid-feedback">
-                            {{ $errors->first('test.open_at') }}
-                        </div>
-                    </div> 
-                    <label>Close at</label>
-                    <div class="input-group mb-3">
-                        <input onchange="setCloseAt(this.value)" type="text" class="form-control datetimepicker @if($errors->has('test.close_at')) is-invalid @endif" wire:model="test.close_at">
-                        <div class="invalid-feedback">
-                            {{ $errors->first('test.close_at') }}
-                        </div>
-                    </div>       
-                    <div class="d-flex">
-                        <button class="btn btn-primary" wire:click.prevent="configureTest">Save</button>
-                        <button class="btn btn-outline-danger ml-2" wire:click.prevent="showConfigure(false)">Cancel</button>
-                    </div>    
-                </div>
+
+                @if (!is_null($test->type))
+                    @if ($test->type->name == 'mcq')
+                    @include('livewire.admin.manage.tests.configs.mcq')  
+                    @endif
+                @endif
             </div>
         </div>
         <!-- /.col -->
@@ -167,7 +148,7 @@ $('.datetimepicker').daterangepicker({
     locale: { format: 'YYYY-MM-DD HH:mm:ss' },
 });
 
-$('#tableTests').DataTable({
+/*$('#tableTests').DataTable({
     paging: true,
     lengthChange: false,
     searching: true,
@@ -175,7 +156,7 @@ $('#tableTests').DataTable({
     info: true,
     autoWidth: false,
     responsive: true,
-});
+});*/
 
 document.addEventListener('DOMContentLoaded', function () {
     loaded = true;
