@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\HomeController;
-use App\Http\Controllers\admin\manage\TestController;
 use App\Http\Controllers\admin\ProfileController;
 use Illuminate\Support\Facades\Route; 
 
