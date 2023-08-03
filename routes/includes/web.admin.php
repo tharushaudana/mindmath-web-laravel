@@ -12,7 +12,7 @@ Route::middleware('auth:web')->group(function () {
 
     Route::group(['prefix' => '/dashboard'], function () {
         Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
-        Route::get('/manage/tests', [TestController::class, 'index'])->name('admin.manage.tests');
+        Route::view('manage/tests', 'admin.manage.tests')->name('admin.manage.tests');
     });
 });
 

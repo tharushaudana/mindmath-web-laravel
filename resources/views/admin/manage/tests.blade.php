@@ -3,5 +3,5 @@
 @section('title', 'Manage Tests')
 
 @section('content')
-    hello tests
+    @livewire('admin.manage.tests.tests')
 @endsection
