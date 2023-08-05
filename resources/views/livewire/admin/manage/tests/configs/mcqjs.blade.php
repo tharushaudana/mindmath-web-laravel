@@ -16,6 +16,7 @@ function showStructEditModal(structStr) {
 
 function initStruct(structStr) {
     struct = JSON.parse(structStr);
+    itemErrors = [];
     renderStructContent();
     showAllItemErrors();
 }
