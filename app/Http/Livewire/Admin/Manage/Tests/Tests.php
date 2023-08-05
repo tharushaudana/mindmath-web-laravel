@@ -34,15 +34,9 @@ class Tests extends Component
         $this->fireAlert('success', 'Test has been created.');
     }
 
-    public function configureTest() {
+    public function configureTest() 
+    {
         $this->validate();
-        
-        if ($this->test->type->name == 'mcq') {
-            if ($this->config->nplus + $this->config->nminus + $this->config->nmultiply + $this->config->ndivitions < 2) {
-                $this->fireAlert('error', 'The total operations count must be larger than 1.');
-                return;
-            }
-        }
 
         $this->config->test_id = $this->test->id;
         $this->config->save();
@@ -79,16 +73,32 @@ class Tests extends Component
         }
     }
 
-    public function setOpenAt($value)
+    public function setValue(string $key, $value)
     {
-        $this->test->open_at = $value;
-        $this->validateOnly('test.open_at');
+        $keys = explode('.', $key);
+
+        if (count($keys) == 1) {
+            if (property_exists($this, $key)) 
+                $this->{$key} = $value;
+            
+            else return;
+        } else {
+            $property = $keys[0];
+            $nestedKey = $keys[1];
+
+            if (property_exists($this, $property))
+                $this->{$property}[$nestedKey] = $value;
+
+            else return;
+        }
+
+        $this->validateOnly($key);
     }
 
-    public function setCloseAt($value)
+    public function testCall($struct) 
     {
-        $this->test->close_at = $value;
-        $this->validateOnly('test.close_at');
+        $this->config['struct'] = $struct;
+        $this->emit('liveerrors', 'test');
     }
 
     private function fireAlert($type, $content)

@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Validator;
+
 return [
     'test' => [
         'test.name' => ['required', 'string'],
@@ -14,14 +16,75 @@ return [
             'config.num_questions' => ['required', 'integer', 'min:1'],
             'config.dur_per' => ['required', 'integer', 'min:1'],
             'config.dur_extra' => ['required', 'integer', 'min:0'],
-            //----
-            'config.nplus' => ['required', 'integer', 'min:0'],
-            'config.nminus' => ['required', 'integer', 'min:0'],
-            'config.nmultiply' => ['required', 'integer', 'min:0'],
-            'config.ndivition' => ['required', 'integer', 'min:0'],
-            'config.shuffle_digits_order' => ['required', 'boolean'],
+            'config.shuffle_questions' => ['required', 'boolean'],
 
-            'config.operation_order' => [
+            'config.struct' => [
+                'required',
+                'json',
+                function ($attribute, $value, $fail) {
+                    $struct = json_decode($value, true);
+
+                    if (count($struct) == 0) 
+                        return $fail('Structure is empty. least 1 structure item is required.');
+
+                    $errors = [];
+
+                    $totalGivenQuestionCount = 0;
+
+                    foreach ($struct as $i => $item) {
+                        $validator = Validator::make($item, [
+                            'nq' => 'required|integer|min:1',
+                            'io' => 'required|boolean',
+                            'soo' => 'required|boolean',
+                            'sdo' => 'required|boolean',
+                            
+                            'oo' => [
+                                'required',
+                                'string',
+                                function ($attribute, $value, $fail) {
+                                    if (!preg_match('#^(?:[+\-*/](?:,[+\-*/])*)+$#', $value))
+                                        return $fail('Invalid order. Please confirm only includes mathematical operators with comma separated without unnecessary charactors.');
+                                }
+                            ],
+                            
+                            'do' => [
+                                'required',
+                                'string',
+                                function ($attribute, $value, $fail) use ($item) {
+                                    if (!preg_match('/^\d(?:,\d)*$/', $value))
+                                        return $fail('Invalid order. Please confirm only includes single digits with comma separated without unnecessary charactors.');
+                                    
+                                    $expectedCount = count(explode(',', $item['oo'])) + 1;
+
+                                    if ($item['oo'] == '') // when operation count is zero.
+                                        return $fail("Operation order is empty. It is required for determine if this valid or invalid.");
+
+                                    if (count(explode(',', $value)) != $expectedCount)
+                                        $fail("Count of digits must be equal to $expectedCount.");
+                                }
+                            ],
+                        ]);
+
+                        if ($validator->fails()) {
+                            foreach ($validator->errors()->messages() as $name => $errs) {
+                                $errors["si-$i-$name"] = $errs[0];    
+                            }
+                        } else {
+                            $totalGivenQuestionCount += $item['nq'];
+                        }
+                    }
+
+                    $this->emit('structerrors', json_encode($errors));
+
+                    if (count($errors) > 0) 
+                        return $fail('Current structure is invalid. Please check every structure item(s) you added are fully completed without any error(s).');
+
+                    if ($totalGivenQuestionCount != $this->config->num_questions) 
+                        return $fail("Current structure has $totalGivenQuestionCount of total questions. But expected question count is ".$this->config->num_questions.".");
+                }
+            ],     
+
+            /*'config.operation_order' => [
                 'nullable',
                 'string',
                 function ($attribute, $value, $fail) {
@@ -97,7 +160,7 @@ return [
                         $fail('Size of order must be equal to '.$expectedCount.'. Because total operations count is '.($expectedCount - 1));
                     }
                 }
-            ],
+            ],*/
         ]
     ]
 ];

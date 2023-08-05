@@ -39,8 +39,9 @@
                                     <button class="btn btn-secondary" wire:click.prevent="showConfigure(true, '{{ $t->id }}')">Configure</button>
                                     
                                     @if ($t->config->id == null)
-                                    <br>
-                                    <span class="text-danger" style="font-size: 10px;">*not configured yet</span>
+                                    <br><span class="text-danger" style="font-size: 10px;"><i class="fa-solid fa-triangle-exclamation"></i>&nbsp;&nbsp;not configured.</span>
+                                    @else
+                                    <br><span class="text-success" style="font-size: 10px;"><i class="fa-solid fa-circle-check"></i>&nbsp;&nbsp;configured.</span>
                                     @endif
                                 </td>
                             </tr>                                
@@ -164,12 +165,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function setOpenAt(value) {
     if (!loaded) return;
-    @this.setOpenAt(value);
+    @this.setValue('test.open_at', value);
 }
 
 function setCloseAt(value) {
     if (!loaded) return;
-    @this.setCloseAt(value);
+    @this.setValue('test.close_at', value);
 }
 
 </script>

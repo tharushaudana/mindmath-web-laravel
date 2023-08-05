@@ -1,21 +1,38 @@
 <script>
 
 var struct = [];
+var itemErrors = [];
+
+window.livewire.on('structerrors', (json) => {
+    removeAllItemErrors();
+    itemErrors = JSON.parse(json);
+    showAllItemErrors();
+});
+
+function showStructEditModal(structStr) {
+    initStruct(structStr);
+    $('#structModal').modal();
+}
+
+function initStruct(structStr) {
+    struct = JSON.parse(structStr);
+    renderStructContent();
+    showAllItemErrors();
+}
 
 function addStruct() {
     struct.unshift({
-        'nquestions': 0,
-        'operation_order': '',
-        'digits_order': '',
-        'shuffle_operation_order': 0,
-        'shuffle_digits_order': 0,
+        'nq': 0,  // nquestions
+        'io': 1,  // intonly
+        'oo': '', // operation_order
+        'do': '', // digits_order
+        'soo': 0, // shuffle_operation_order
+        'sdo': 0, // shuffle_digits_order
     });
 
-    renderStructContent();
-}
+    sendStruct();
 
-function showStructEditModal(structStr) {
-    $('#structModal').modal();
+    renderStructContent();
 }
 
 function renderStructContent() {
@@ -25,16 +42,22 @@ function renderStructContent() {
         const item = struct[i];
 
         content += `
-            <div class="card">
-                <div class="card-body p-2">
+            <div class="card ${i == 0 ? 'bg-light' : ''}" style="position: relative;">
+                <i onclick="onClickRemoveStructItem(${i})" class="fa-solid fa-square-minus text-danger" style="position: absolute; cursor: pointer;"></i>
+                <div class="card-body p-2 mt-3">
                     <div class="w-100 d-flex justify-content-between">
                         <div>
                             <span class="text-muted" style="font-size: 12px;">Question Count</span>
-                            <input oninput="onChangeStruct(${i}, 'nquestions', this.value)" type="number" class="form-control" min="1" style="width: 80px;" value="${item['nquestions']}">
-                            <br>
-                            <button onclick="onClickRemoveStructItem(${i})" class="btn btn-outline-danger btn-sm">Remove</button>
+                            <div class="input-group" id="si-${i}-nq">
+                                <input oninput="onChangeStruct(${i}, 'nq', this.value)" type="number" class="form-control input" min="1" style="width: 80px;" value="${item['nq']}">
+                                <div class="invalid-feedback">...</div>
+                            </div>
+                            <div class="mt-1 d-flex" id="checkbox-io-${i}">
+                                <input onchange="onChangeStruct(${i}, 'io', this.checked ? 1 : 0)" type="checkbox" value="1" ${item['io'] === 1 ? 'checked' : ''}>
+                                <span style="font-size: 11px; font-weight: 500;">&nbsp;&nbsp;Interger Answers Only</span>
+                            </div>
                         </div>
-                        <div>
+                        <div class="ml-3">
                             <div>
                                 <div class="d-flex">
                                     <span class="text-muted" style="font-size: 10px; margin-right: 10px;">Operation Order</span>
@@ -44,20 +67,26 @@ function renderStructContent() {
                                     <i onclick="onClickOperationAddBtn(${i}, '/')" class="fa-sharp fa-solid fa-divide" style="font-size: 8px; color: #000; border: 1px solid #000; padding: 2px; margin-right: 1px; cursor: pointer;"></i>
                                     <i onclick="onClickOperationsClearBtn(${i})" class="fa-sharp fa-solid fa-eraser" style="font-size: 12px; color: #f00; padding: 2px; margin-right: 1px; cursor: pointer;"></i>
                                 </div>
-                                <div class="form-control mt-1 d-flex" style="height: 30px;" id="operation-order-viewer-${i}">
-                                    ${htmlOperationOrderViewer(i)}
+                                <div class="input-group mt-1" id="si-${i}-oo">
+                                    <div class="form-control d-flex input" style="height: 30px;" id="operation-order-viewer-${i}">
+                                        ${htmlOperationOrderViewer(i)}
+                                    </div>
+                                    <div class="invalid-feedback">...</div>
                                 </div>
-                                <div class="mt-1" id="checkbox-shuffle-operation-order-${i}" style="display: ${item['operation_order'].split(',').length > 1 ? 'flex' : 'none'};">
-                                    <input onchange="onChangeStruct(${i}, 'shuffle_operation_order', this.checked ? 1 : 0)" type="checkbox" value="1" ${item['shuffle_operation_order'] === 1 ? 'checked' : ''}>
+                                <div class="mt-1" id="checkbox-shuffle-operation-order-${i}" style="display: ${item['oo'].split(',').length > 1 ? 'flex' : 'none'};">
+                                    <input onchange="onChangeStruct(${i}, 'soo', this.checked ? 1 : 0)" type="checkbox" value="1" ${item['soo'] === 1 ? 'checked' : ''}>
                                     <span style="font-size: 11px; font-weight: 500;">&nbsp;&nbsp;Shuffle</span>
                                 </div>
                             </div>
                             <div>
                                 <span class="text-muted" style="font-size: 10px;">Digits Order</span>
                                 <br>
-                                <input oninput="onInputDigitsOrder(${i}, this)" type="text" class="form-control" min="1" style="height: 20px; font-size: 14px;" value="${item['digits_order']}">
-                                <div class="mt-1" id="checkbox-shuffle-digits-order-${i}" style="display: ${item['digits_order'].split(',').length > 1 ? 'flex' : 'none'};">
-                                    <input onchange="onChangeStruct(${i}, 'shuffle_digits_order', this.checked ? 1 : 0)" type="checkbox" value="1" ${item['shuffle_digits_order'] === 1 ? 'checked' : ''}>
+                                <div class="input-group" id="si-${i}-do">
+                                    <input oninput="onInputDigitsOrder(${i}, this)" type="text" class="form-control input" min="1" style="height: 20px; font-size: 14px;" value="${item['do']}">
+                                    <div class="invalid-feedback">...</div>
+                                </div>
+                                <div class="mt-1" id="checkbox-shuffle-digits-order-${i}" style="display: ${item['do'].split(',').length > 1 ? 'flex' : 'none'};">
+                                    <input onchange="onChangeStruct(${i}, 'sdo', this.checked ? 1 : 0)" type="checkbox" value="1" ${item['sdo'] === 1 ? 'checked' : ''}>
                                     <span style="font-size: 11px; font-weight: 500;">&nbsp;&nbsp;Shuffle</span>
                                 </div>
                             </div>
@@ -72,19 +101,20 @@ function renderStructContent() {
 }
 
 function onClickRemoveStructItem(index) {
-    struct.splice(index);
+    struct.splice(index, 1);
+    sendStruct();
     renderStructContent();
 }
 
 function onClickOperationAddBtn(index, symbol) {
-    var order = struct[index]['operation_order'];
+    var order = struct[index]['oo'];
 
     if (order.length == 0)
         order += `${symbol}`;
     else 
         order += `,${symbol}`;
 
-        onChangeStruct(index, 'operation_order', order);
+        onChangeStruct(index, 'oo', order);
 
     if (order.split(',').length <= 1) {
         $(`#checkbox-shuffle-operation-order-${index}`).css('display', 'none');
@@ -96,13 +126,13 @@ function onClickOperationAddBtn(index, symbol) {
 }
 
 function onClickOperationsClearBtn(index) {
-    onChangeStruct(index, 'operation_order', '');
+    onChangeStruct(index, 'oo', '');
     $(`#operation-order-viewer-${index}`).html(htmlOperationOrderViewer(index));
     $(`#checkbox-shuffle-operation-order-${index}`).css('display', 'none');
 }
 
 function htmlOperationOrderViewer(index) {
-    const order = struct[index]['operation_order'];
+    const order = struct[index]['oo'];
     
     if (order.length === 0) return '<span class="text-muted" style="font-size: 12px;"><i>Empty...</i></span>'; 
 
@@ -132,8 +162,9 @@ function onInputDigitsOrder(index, e) {
 
     chars.forEach(c => {
         const n = parseInt(c);
+
         if (!isNaN(c) && n > 0) { 
-            if (struct[index]['operation_order'] === '' || validChars.length === struct[index]['operation_order'].split(',').length + 1) {
+            if (struct[index]['oo'] === '' || validChars.length === struct[index]['oo'].split(',').length + 1) {
                 noChanges = true;
                 return;
             }
@@ -153,12 +184,33 @@ function onInputDigitsOrder(index, e) {
 
     $(e).val(order);
 
-    if (!noChanges) onChangeStruct(index, 'digits_order', order);
+    if (!noChanges) onChangeStruct(index, 'do', order);
 }
 
 function onChangeStruct(index, key, value) {    
     struct[index][key] = value;
-    console.log(struct);
+    sendStruct();
+}
+
+function sendStruct() {
+    @this.setValue('config.struct', JSON.stringify(struct));
+}
+
+function showAllItemErrors() {
+    for (const [k, v] of Object.entries(itemErrors)) {
+        showErrorOnItem(k, v);
+    }
+}
+
+function showErrorOnItem(item, error) {
+    $(`#${item} .invalid-feedback`).html(error);
+    $(`#${item} .input`).addClass('is-invalid');
+}
+
+function removeAllItemErrors() {
+    for (const [k, v] of Object.entries(itemErrors)) {
+        $(`#${k} .input`).removeClass('is-invalid');
+    }
 }
     
 </script>

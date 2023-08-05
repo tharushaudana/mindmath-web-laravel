@@ -13,12 +13,8 @@ class McqTest extends Model
         'test_id',
         'num_questions',
         'dur_per',
-        'nplus',
-        'nminus',
-        'nmultiply',
-        'ndivition',
-        'operation_order',
-        'digits_order',
-        'shuffle_digits_order'
+        'dur_extra',
+        'struct',
+        'shuffle_questions',
     ];
 }

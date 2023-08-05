@@ -21,93 +21,49 @@
         </div>
     </div> 
 
+    @if ($config->num_questions > 0)
     <div class="card">
-        <div class="card-header">Operations</div>
+        <div class="card-header"><label>Structure of Questions</label></div>
         <div class="card-body">
-            @error('noperations')
-            <span class="text-danger">{{ $message }}</span>
+            <button class="btn btn-secondary btn-sm" onclick="showStructEditModal('{{ $config->struct }}')">Edit Structure</button>
+
+            @error('config.struct')
             <div class="mb-1"></div>
-            <br>
+            <span class="text-danger" style="font-size: 12px;">{{ $message }}</span>
             @enderror
+        </div>
+    </div>        
+    @endif
 
-            <button onclick="showStructEditModal()">Test</button>
+    <div class="d-flex mb-3">
+        <input type="checkbox" wire:model="config.shuffle_questions" value="1" {{ $config->shuffle_questions == 1 ? 'checked' : '' }}>
+        <span>&nbsp;&nbsp;Shuffle Questions</span>
+    </div>
 
-            <label>[+] Plus Count</label>
-            <div class="input-group mb-3">
-                <input type="number" class="form-control @if($errors->has('config.nplus')) is-invalid @endif" wire:model="config.nplus" value="1" min="0">
-                <div class="invalid-feedback">
-                    {{ $errors->first('config.nplus') }}
-                </div>
-            </div>
-            <label>[-] Minus Count</label>
-            <div class="input-group mb-3">
-                <input type="number" class="form-control @if($errors->has('config.nminus')) is-invalid @endif" wire:model="config.nminus" value="1" min="0">
-                <div class="invalid-feedback">
-                    {{ $errors->first('config.nminus') }}
-                </div>
-            </div>  
-            <label>[x] Multiply Count</label>
-            <div class="input-group mb-3">
-                <input type="number" class="form-control @if($errors->has('config.nmultiply')) is-invalid @endif" wire:model="config.nmultiply" value="1" min="0">
-                <div class="invalid-feedback">
-                    {{ $errors->first('config.nmultiply') }}
-                </div>
-            </div>  
-            <label>[/] Divition Count</label>
-            <div class="input-group mb-3">
-                <input type="number" class="form-control @if($errors->has('config.ndivition')) is-invalid @endif" wire:model="config.ndivition" value="1" min="0">
-                <div class="invalid-feedback">
-                    {{ $errors->first('config.ndivition') }}
-                </div>
-            </div>  
-        </div>
-    </div>
-    <label>Operation Order</label>
-    <br>
-    <span class="text-muted" style="font-size: 12px;">leave empty for random order</span>
-    <div class="input-group mb-3">
-        <input type="text" class="form-control @if($errors->has('config.operation_order')) is-invalid @endif" wire:model="config.operation_order" placeholder="like +,+,-,+">
-        <div class="invalid-feedback">
-            {!! $errors->first('config.operation_order') !!}
-        </div>
-    </div>
-    <label>Digits Order</label>
-    <div class="input-group mb-3">
-        <input type="text" class="form-control @if($errors->has('config.digits_order')) is-invalid @endif" wire:model="config.digits_order" placeholder="like 1,1,2,3,2">
-        <div class="invalid-feedback">
-            {{ $errors->first('config.digits_order') }}
-        </div>
-    </div>
-    <div class="input-group mb-3">
-        <input type="checkbox" wire:model="config.shuffle_digits_order">
-        <span>&nbsp;&nbsp;Shuffle Digits Order</span>
-        {{ $errors->first('config.shuffle_digits_order') }}
-    </div>
     <div class="d-flex">
         <button class="btn btn-primary" wire:click.prevent="configureTest">Save</button>
         <button class="btn btn-outline-danger ml-2" wire:click.prevent="showConfigure(false)">Cancel</button>
     </div>    
 </div>
 
-<div class="modal fade" id="structModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<div class="modal fade" id="structModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" wire:ignore>
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Edit Struct</h5>
+                <h5 class="modal-title" id="exampleModalLongTitle">Edit Structure</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <button onclick="addStruct()" class="btn btn-outline-primary w-100">Add Struct</button>
+                <button onclick="addStruct()" class="btn btn-outline-primary w-100">Add Item</button>
                 <div class="mb-3"></div>
                 <div id="struct-content">
-                    <span class="text-muted"><i>No structs added yet...</i></span>
+                    <span class="text-muted"><i>No items added yet...</i></span>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Done</button>
             </div>
         </div>
     </div>

@@ -39,11 +39,8 @@ class Test extends Model
             if (is_null($c)) {
                 $new = new McqTest();
                 $new->dur_extra = 0;
-                $new->nplus = 0;
-                $new->nminus = 0;
-                $new->nmultiply = 0;
-                $new->ndivition = 0;
-                $new->shuffle_digits_order = 0;
+                $new->shuffle_questions = 0;
+                $new->struct = '[]';
                 return $new;
             }
 
