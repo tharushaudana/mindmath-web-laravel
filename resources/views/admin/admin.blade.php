@@ -8,7 +8,7 @@
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="{{ asset('assets/admin/plugins/fontawesome-free/css/all.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/admin/plugins/fontawesome-free-6.4.2/css/all.min.css') }}">
   <!-- IonIcons -->
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
   <!-- Theme style -->
@@ -143,6 +143,8 @@
 <!-- InputMask -->
 <script src="{{ asset('assets/admin/plugins/moment/moment.min.js') }}"></script>
 <script src="{{ asset('assets/admin/plugins/inputmask/jquery.inputmask.min.js') }}"></script>
+<!-- Mask -->
+<script src="{{ asset('assets/admin/plugins/mask/jquery.mask.min.js') }}"></script>
 <!-- date-range-picker -->
 <script src="{{ asset('assets/admin/plugins/daterangepicker/daterangepicker.js') }}"></script>
 <!-- SweetAlert2 -->

@@ -127,7 +127,7 @@
 
                 @if (!is_null($test->type))
                     @if ($test->type->name == 'mcq')
-                    @include('livewire.admin.manage.tests.configs.mcq')  
+                        @include('livewire.admin.manage.tests.configs.mcq')
                     @endif
                 @endif
             </div>
@@ -173,4 +173,7 @@ function setCloseAt(value) {
 }
 
 </script>
+
+@include('livewire.admin.manage.tests.configs.mcqjs')
+
 @endpush

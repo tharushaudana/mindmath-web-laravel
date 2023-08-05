@@ -29,6 +29,9 @@
             <div class="mb-1"></div>
             <br>
             @enderror
+
+            <button onclick="showStructEditModal()">Test</button>
+
             <label>[+] Plus Count</label>
             <div class="input-group mb-3">
                 <input type="number" class="form-control @if($errors->has('config.nplus')) is-invalid @endif" wire:model="config.nplus" value="1" min="0">
@@ -84,4 +87,28 @@
         <button class="btn btn-primary" wire:click.prevent="configureTest">Save</button>
         <button class="btn btn-outline-danger ml-2" wire:click.prevent="showConfigure(false)">Cancel</button>
     </div>    
+</div>
+
+<div class="modal fade" id="structModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Edit Struct</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <button onclick="addStruct()" class="btn btn-outline-primary w-100">Add Struct</button>
+                <div class="mb-3"></div>
+                <div id="struct-content">
+                    <span class="text-muted"><i>No structs added yet...</i></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
 </div>
