@@ -19,8 +19,8 @@ class TestController extends Controller
         //$oo = ['/'];
         //$do = [1,1];
         $io = true;
-        $soo = false;
-        $sdo = false;
+        $soo = true;
+        $sdo = true;
         
         //$dsOrder = [3, 2, 2, 1];
         //$dsOrder = [4, 1, 4, 1];
@@ -48,11 +48,9 @@ class TestController extends Controller
 
         for ($i=0; $i < $nq; $i++) {             
             $q = ENGINE_AUTOMCQ::generateQuestion($oo, $do, $soo, $sdo, 1, 4);
-            
-            $exp = $this->showExpression($q[0], $q[1]);
-
             $answers = $q[2];
 
+            $exp = $this->showExpression($q[0], $q[1]);
             $exp .= " | R: ".$answers[1];
 
             foreach ($answers[0] as $a) {
