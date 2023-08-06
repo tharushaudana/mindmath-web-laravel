@@ -5,6 +5,7 @@ namespace App\Http\Controllers\student;
 use App\Http\Controllers\Controller;
 use App\Models\Test;
 use ENGINE_AUTOMCQ;
+use ENGINE_TOOLS;
 use Illuminate\Http\Request;
 
 class TestController extends Controller
@@ -16,10 +17,10 @@ class TestController extends Controller
         $oo = ['+', '*', '/', '/', '/', '*', '-'];
         $do = [2, 2, 3, 2, 2, 1, 2, 1];
         //$oo = ['/'];
-        //$do = [3,3];
+        //$do = [1,1];
         $io = true;
-        $soo = true;
-        $sdo = true;
+        $soo = false;
+        $sdo = false;
         
         //$dsOrder = [3, 2, 2, 1];
         //$dsOrder = [4, 1, 4, 1];
@@ -46,15 +47,25 @@ class TestController extends Controller
         $test = [];
 
         for ($i=0; $i < $nq; $i++) {             
-            $q = ENGINE_AUTOMCQ::generateQuestion($oo, $do, $soo, $sdo, 1);
+            $q = ENGINE_AUTOMCQ::generateQuestion($oo, $do, $soo, $sdo, 1, 4);
             
-            array_push($test, $this->showExpression($q[0], $q[1]));
+            $exp = $this->showExpression($q[0], $q[1]);
+
+            $answers = $q[2];
+
+            $exp .= " | R: ".$answers[1];
+
+            foreach ($answers[0] as $a) {
+                $exp .= ' | '.$a.' | ';
+            }
+
+            array_push($test, $exp);
         }
 
         dd($test);
     }
 
-    public static function showExpression($operations, $numbers) {
+    public function showExpression($operations, $numbers) {
         $exp = '';
         
         for ($i=0; $i < count($numbers); $i++) { 

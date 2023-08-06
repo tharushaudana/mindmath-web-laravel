@@ -1,9 +1,9 @@
 <?php
 
 class ENGINE_AUTOMCQ {
-    public static function generateQuestion($opOrder, $dsOrder, $shuffleOpOrder, $shuffleDsOrder, $integerAnswersOnly) {
-        if ($shuffleOpOrder) ENGINE_AUTOMCQ::fisherYatesShuffle($opOrder);
-        if ($shuffleDsOrder) ENGINE_AUTOMCQ::fisherYatesShuffle($dsOrder);
+    public static function generateQuestion($opOrder, $dsOrder, $shuffleOpOrder, $shuffleDsOrder, $integerAnswersOnly, $numAnswers) {
+        if ($shuffleOpOrder) ENGINE_TOOLS::fisherYatesShuffle($opOrder);
+        if ($shuffleDsOrder) ENGINE_TOOLS::fisherYatesShuffle($dsOrder);
         
         if ($integerAnswersOnly == 1) {
             if (!ENGINE_AUTOMCQ::isOrdersValidForOnlyIntegerAnswers($opOrder, $dsOrder))
@@ -35,14 +35,70 @@ class ENGINE_AUTOMCQ {
             } 
         }
 
-        return [$opOrder, $numbers];
+        return [$opOrder, $numbers, ENGINE_AUTOMCQ::generateAnswers($opOrder, $numbers, $numAnswers)];
+    }
+
+    private static function generateAnswers($opOrder, $dsOrder, $numAnswers) {
+        $correctAnswer = ENGINE_TOOLS::getResultOfExpression(ENGINE_TOOLS::toExpression($opOrder, $dsOrder));
+
+        $fakeAnswers = [];
+
+        for ($i=2; $i <= 9; $i++) { 
+            /*do {
+                $rn1  = mt_rand(0, 1);
+                $rn2 = mt_rand(1, 100);
+                $rn3 = mt_rand(1, 5);
+    
+                if ($correctAnswer % $i == 0) {
+                    $fa = $correctAnswer + ($i * $rn2) * ($rn1 == 1 ? -1 : 1);
+                    $fa += $rn3 * ($rn1 == 1 ? -1 : 1);
+                } else {
+                    $fa = $correctAnswer + ($correctAnswer % $i) + $rn3 * ($rn1 == 1 ? -1 : 1); 
+                }
+            } while (in_array($fa, $fakeAnswers));*/
+
+            $rn1  = mt_rand(0, 1);
+            $rn2 = mt_rand(1, 100);
+            $rn3 = mt_rand(1, 5);
+
+            if ($correctAnswer % $i == 0) {
+                $fa = $correctAnswer + ($i * $rn2) * ($rn1 == 1 ? -1 : 1);
+                $fa += $rn3 * ($rn1 == 1 ? -1 : 1);
+            } else {
+                $fa = $correctAnswer + ($correctAnswer % $i) + $rn3 * ($rn1 == 1 ? -1 : 1); 
+            }
+
+            if (!in_array($fa, $fakeAnswers) && $fa != $correctAnswer) array_push($fakeAnswers, $fa);
+        }
+
+        ENGINE_TOOLS::fisherYatesShuffle($fakeAnswers);
+
+        $answers = [];
+        $usedIndexes = [];
+
+        for ($i=0; $i < $numAnswers - 1; $i++) { 
+            $index = -1;
+            
+            do {
+                $index = mt_rand(0, count($fakeAnswers) - 1);
+            } while(in_array($index, $usedIndexes));
+
+            array_push($answers, $fakeAnswers[$index]);
+            array_push($usedIndexes, $index);
+        }
+
+        array_push($answers, $correctAnswer);
+
+        ENGINE_TOOLS::fisherYatesShuffle($answers);
+
+        return [$answers, $correctAnswer];
     }
 
     public static function fixDigitSizeOrderToIntegersOnly(&$dsOrder, $opOrder) {
         if (ENGINE_AUTOMCQ::isDigitSizeOrderValidForOnlyIntegerAnswers($dsOrder, $opOrder)) return true;
         
         do {
-            ENGINE_AUTOMCQ::fisherYatesShuffle($dsOrder);
+            ENGINE_TOOLS::fisherYatesShuffle($dsOrder);
         } while (!ENGINE_AUTOMCQ::isDigitSizeOrderValidForOnlyIntegerAnswers($dsOrder, $opOrder));
 
         return true;
@@ -177,18 +233,5 @@ class ENGINE_AUTOMCQ {
         $max = pow(10, $ds) - 1;
 
         return mt_rand($min, $max);
-    }
-
-    private static function fisherYatesShuffle(&$array) {
-        $count = count($array);
-        
-        for ($i = $count - 1; $i > 0; $i--) {
-            $randIndex = mt_rand(0, $i);
-            
-            // Swap elements at $i and $randIndex
-            $temp = $array[$i];
-            $array[$i] = $array[$randIndex];
-            $array[$randIndex] = $temp;
-        }
     }
 }
