@@ -60,7 +60,12 @@ return [
                                         return $fail("Operation order is empty. It is required for determine if this valid or invalid.");
 
                                     if (count(explode(',', $value)) != $expectedCount)
-                                        $fail("Count of digits must be equal to $expectedCount.");
+                                        return $fail("Count of digits must be equal to $expectedCount.");
+
+                                    if ($item['io'] == 0) return 0;
+                                    
+                                    if (!ENGINE_AUTOMCQ::isOrdersValidForOnlyIntegerAnswers(explode(',', $item['oo']), explode(',', $item['do'])))
+                                        return $fail('This digit size order is not valid for generate integer only answers.');
                                 }
                             ],
                         ]);

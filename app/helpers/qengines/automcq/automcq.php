@@ -1,46 +1,7 @@
 <?php
 
-namespace App\Http\Controllers\student;
-
-use App\Http\Controllers\Controller;
-use App\Models\Test;
-use ENGINE_AUTOMCQ;
-use Illuminate\Http\Request;
-
-class TestController extends Controller
-{
-    public function index(Test $test) {
-        // for divition
-
-        $oo = ['+', '-', '/', '/', '/', '*'];
-        $do = [3, 2, 2, 1, 2, 2, 3];
-        $soo = true;
-        $sdo = true;
-        
-        //$dsOrder = [3, 2, 2, 1];
-        //$dsOrder = [4, 1, 4, 1];
-        //$dsOrder = [4, 1, 2, 2, 1];
-        //$dsOrder = [1,1,1];
-
-        //$r = $this->resolveDivitionForOnlyIntegers($dsOrder);
-        //dd($r);
-
-        //return 'dsds';
-
-        /*$test = [];
-
-        for ($i=0; $i < 10; $i++) {             
-            if ($soo) $this->fisherYatesShuffle($oo);
-            if ($sdo) $this->fisherYatesShuffle($do);
-            array_push($test, $this->showExpression($oo, $do));
-        }
-
-        dd($test);*/
-
-        dd(ENGINE_AUTOMCQ::isOrdersValidForOnlyIntegerAnswers(['+', '/', '/', '/', '-'], [9,9,9,2,2,1]));
-    }
-
-    /*public function showExpression($operations, $numbers) {
+class ENGINE_AUTOMCQ {
+    public static function showExpression($operations, $numbers) {
         $exp = '';
         
         for ($i=0; $i < count($numbers); $i++) { 
@@ -52,7 +13,7 @@ class TestController extends Controller
         return $exp;
     }
 
-    public function isOrdersValidForOnlyIntegerAnswers($opOrder, $dsOrder) {
+    public static function isOrdersValidForOnlyIntegerAnswers($opOrder, $dsOrder) {
         if (count($dsOrder) == 2) return true;  
         
         $opCounts = array_count_values($opOrder);
@@ -102,11 +63,11 @@ class TestController extends Controller
         return false;
     }
 
-    public function generateQuestion($opOrder, $dsOrder) {
+    public static function generateQuestion($opOrder, $dsOrder) {
 
     }
 
-    public function resolveDivitionForOnlyIntegers($dsOrder) {
+    private static function resolveDivitionForOnlyIntegers($dsOrder) {
         if (count($dsOrder) <= 1) return NAN;
         
         $firstDs = $dsOrder[0];
@@ -122,7 +83,7 @@ class TestController extends Controller
             $narr = [];
 
             foreach ($remain as $ds) {
-                $num = $this->generateRandNum($ds);
+                $num = ENGINE_AUTOMCQ::generateRandNum($ds);
                 $multiplyResultOfRemain *= $num;
                 array_push($narr, $num);
             }
@@ -153,7 +114,7 @@ class TestController extends Controller
         return $narr;
     }
 
-    public function generateRandNum($ds) {
+    private static function generateRandNum($ds) {
         if ($ds <= 0) return NAN;
     
         $min = pow(10, $ds - 1);
@@ -162,7 +123,7 @@ class TestController extends Controller
         return mt_rand($min, $max);
     }
 
-    function fisherYatesShuffle(&$array) {
+    private static function fisherYatesShuffle(&$array) {
         $count = count($array);
         
         for ($i = $count - 1; $i > 0; $i--) {
@@ -174,56 +135,4 @@ class TestController extends Controller
             $array[$randIndex] = $temp;
         }
     }
-
-    //########## not used
-
-    public function generateRandNumForDivition($ds, $divisableDs) {
-        if ($ds <= 0) return null;
-    
-        do {
-            $min = pow(10, $ds - 1);
-            $max = pow(10, $ds) - 1;
-            $randomNumber = mt_rand($min, $max);
-        } while ($this->isPrime($randomNumber) || $randomNumber == 1);
-    
-        return [$randomNumber, $this->findNearestDivisibleNumber($randomNumber, $divisableDs)];
-    }
-
-    function findNearestDivisibleNumber($number, $divisibleDigitSize) {
-        $minDivisible = pow(10, $divisibleDigitSize - 1);
-        $maxDivisible = pow(10, $divisibleDigitSize) - 1;
-
-        $nearestDivisible = floor($number / $maxDivisible) * $maxDivisible;
-    
-        if ($nearestDivisible < $minDivisible) {
-            $nearestDivisible = $minDivisible;
-        }
-    
-        return $nearestDivisible;
-    }
-    
-
-    function isPrime($number) {
-        if ($number <= 1) {
-            return false;
-        }
-    
-        if ($number <= 3) {
-            return true;
-        }
-    
-        if ($number % 2 == 0 || $number % 3 == 0) {
-            return false;
-        }
-    
-        $i = 5;
-        while ($i * $i <= $number) {
-            if ($number % $i == 0 || $number % ($i + 2) == 0) {
-                return false;
-            }
-            $i += 6;
-        }
-    
-        return true;
-    }*/
 }
