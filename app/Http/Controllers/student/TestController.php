@@ -36,7 +36,7 @@ class TestController extends Controller
 
         dd($test);*/
 
-        dd($this->isOrdersCanBeChangeForOnlyIntegerAnswers(['+', '/', '/', '/', '-'], [3,3,2,2,1,3]));
+        dd($this->isOrdersValidForOnlyIntegerAnswers(['+', '/', '/', '/', '-'], [1,4,4,1,3]));
     }
 
     public function showExpression($operations, $numbers) {
@@ -51,50 +51,51 @@ class TestController extends Controller
         return $exp;
     }
 
-    public function isOrdersCanBeChangeForOnlyIntegerAnswers($opOrder, $dsOrder) {
-        if (count($dsOrder) == 2) return;  
+    public function isOrdersValidForOnlyIntegerAnswers($opOrder, $dsOrder) {
+        if (count($dsOrder) == 2) return true;  
         
         $opCounts = array_count_values($opOrder);
 
         if (!isset($opCounts['/'])) return true;
+        $expectedNumCount = $opCounts['/'] + 1;
 
         $dsCounts = array_count_values($dsOrder);
-        
-        //if (isset($dsCounts[1]) && )
-        
+
+        if (isset($dsCounts[1])) {
+            if ($dsCounts[1] >= $expectedNumCount) return true;
+            $expectedNumCount -= $dsCounts[1];
+        } 
+
         $dsCountsKeys = array_keys($dsCounts);
 
-        $divCount = $opCounts['/'];
+        rsort($dsCountsKeys);
+        $maxDs = $dsCountsKeys[0];
 
-        $maxDs = max($dsCountsKeys);
-        $maxCount = max(array_values($dsCounts));
+        //### check for expectedNumCount can complete like 9,9,1,1,1,... (twice of maxds at beginning others are 1)
+        if ($dsCounts[$maxDs] > 1 && $expectedNumCount - 2 <= 0) return true; 
 
-        if ($maxCount > 2) {
-            $maxCountDs = 0;
+        // ### maxds number is used
+        $expectedNumCount -= 1; 
 
-            foreach ($dsCounts as $ds => $count) {
-                if ($count == $maxCount) {
-                    if ($ds > $maxCountDs) $maxCountDs = $ds;
-                }
+        //### remove all maxds values
+        $dsCountsKeys = array_diff($dsCountsKeys, array_fill(0, $dsCounts[$maxDs], $maxDs));
+
+        $n = $maxDs;
+
+        foreach ($dsCountsKeys as $ds) {
+            if ($ds == 1) return false;
+
+            for ($i=0; $i < $dsCounts[$ds]; $i++) { 
+                $n = $n - $ds + 1;
+                
+                if ($n >= 1) $expectedNumCount -= 1;
+                else return false;
+
+                if ($expectedNumCount == 0) return true;
             }
-
-
         }
 
-        $ds = $maxDs;
-
-        /*rsort($dsOrder);
-
-        dd($dsOrder);
-
-        $n = $dsOrder[0];
-
-        for ($i=0; $i < $divCount - 1; $i++) { 
-            $n -= $dsOrder[$i + 1] - 1;
-            if ($n < 1) return false;
-        }*/
-
-        return true;
+        return false;
     }
 
     public function generateQuestion($opOrder, $dsOrder) {
