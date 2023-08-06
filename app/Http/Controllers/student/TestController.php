@@ -11,9 +11,7 @@ use Illuminate\Http\Request;
 class TestController extends Controller
 {
     public function index(Test $test) {
-        // for divition
-
-        $nq = 40;
+        /*$nq = 40;
         $oo = ['+', '*', '/', '/', '/', '*', '-'];
         $do = [2, 2, 3, 2, 2, 1, 2, 1];
         //$oo = ['/'];
@@ -21,26 +19,6 @@ class TestController extends Controller
         $io = true;
         $soo = true;
         $sdo = true;
-        
-        //$dsOrder = [3, 2, 2, 1];
-        //$dsOrder = [4, 1, 4, 1];
-        //$dsOrder = [4, 1, 2, 2, 1];
-        //$dsOrder = [1,1,1];
-
-        //$r = $this->resolveDivitionForOnlyIntegers($dsOrder);
-        //dd($r);
-
-        //return 'dsds';
-
-        /*$test = [];
-
-        for ($i=0; $i < 10; $i++) {             
-            if ($soo) $this->fisherYatesShuffle($oo);
-            if ($sdo) $this->fisherYatesShuffle($do);
-            array_push($test, $this->showExpression($oo, $do));
-        }
-
-        dd($test);*/
 
         //dd(ENGINE_AUTOMCQ::isOrdersValidForOnlyIntegerAnswers(['+', '/', '/', '/', '-'], [9, 3, 3, 3, 3, 3]));
 
@@ -60,7 +38,9 @@ class TestController extends Controller
             array_push($test, $exp);
         }
 
-        dd($test);
+        dd($test);*/
+
+        return view('student.test');
     }
 
     public function showExpression($operations, $numbers) {
