@@ -36,7 +36,7 @@ class TestController extends Controller
 
         dd($test);*/
 
-        dd($this->isOrdersValidForOnlyIntegerAnswers(['+', '/', '/', '/', '-'], [1,4,4,1,3]));
+        dd($this->isOrdersValidForOnlyIntegerAnswers(['+', '/', '/', '/', '-'], [9,9,9,2,2,1]));
     }
 
     public function showExpression($operations, $numbers) {
@@ -64,11 +64,12 @@ class TestController extends Controller
         if (isset($dsCounts[1])) {
             if ($dsCounts[1] >= $expectedNumCount) return true;
             $expectedNumCount -= $dsCounts[1];
+            unset($dsCounts[1]);
         } 
 
         $dsCountsKeys = array_keys($dsCounts);
 
-        rsort($dsCountsKeys);
+        rsort($dsCountsKeys); // sort DESC
         $maxDs = $dsCountsKeys[0];
 
         //### check for expectedNumCount can complete like 9,9,1,1,1,... (twice of maxds at beginning others are 1)
@@ -79,6 +80,8 @@ class TestController extends Controller
 
         //### remove all maxds values
         $dsCountsKeys = array_diff($dsCountsKeys, array_fill(0, $dsCounts[$maxDs], $maxDs));
+
+        sort($dsCountsKeys); // sort ASC
 
         $n = $maxDs;
 
