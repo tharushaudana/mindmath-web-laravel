@@ -1,16 +1,74 @@
 <?php
 
 class ENGINE_AUTOMCQ {
-    public static function showExpression($operations, $numbers) {
-        $exp = '';
+    public static function generateQuestion($opOrder, $dsOrder, $shuffleOpOrder, $shuffleDsOrder, $integerAnswersOnly) {
+        if ($shuffleOpOrder) ENGINE_AUTOMCQ::fisherYatesShuffle($opOrder);
+        if ($shuffleDsOrder) ENGINE_AUTOMCQ::fisherYatesShuffle($dsOrder);
         
-        for ($i=0; $i < count($numbers); $i++) { 
-            $exp .= $numbers[$i];
-            if ($i <= count($operations) - 1) 
-                $exp .= $operations[$i];
+        if ($integerAnswersOnly == 1) {
+            if (!ENGINE_AUTOMCQ::isOrdersValidForOnlyIntegerAnswers($opOrder, $dsOrder))
+                return false;
+
+            ENGINE_AUTOMCQ::fixDigitSizeOrderToIntegersOnly($dsOrder, $opOrder);
         }
 
-        return $exp;
+        $numbers = [];
+
+        $divSector = [];
+
+        for ($i=0; $i < count($dsOrder); $i++) { 
+            if ($i <= count($opOrder) - 1) $op = $opOrder[$i];
+            else $op = null;
+
+            $ds = $dsOrder[$i];
+            
+            if ($op == '/') {
+                array_push($divSector, $ds);
+            } else {
+                if (count($divSector) > 0) {
+                    array_push($divSector, $ds);
+                    $numbers = array_merge($numbers, ENGINE_AUTOMCQ::resolveDivitionForOnlyIntegers($divSector));
+                    $divSector = [];
+                } else {
+                    array_push($numbers, ENGINE_AUTOMCQ::generateRandNum($ds));
+                }
+            } 
+        }
+
+        return [$opOrder, $numbers];
+    }
+
+    public static function fixDigitSizeOrderToIntegersOnly(&$dsOrder, $opOrder) {
+        if (ENGINE_AUTOMCQ::isDigitSizeOrderValidForOnlyIntegerAnswers($dsOrder, $opOrder)) return true;
+        
+        do {
+            ENGINE_AUTOMCQ::fisherYatesShuffle($dsOrder);
+        } while (!ENGINE_AUTOMCQ::isDigitSizeOrderValidForOnlyIntegerAnswers($dsOrder, $opOrder));
+
+        return true;
+    }
+
+    public static function isDigitSizeOrderValidForOnlyIntegerAnswers($dsOrder, $opOrder) {
+        $n = 0;
+        
+        for ($i=0; $i < count($dsOrder) - 1; $i++) { 
+            $op = $opOrder[$i];
+            
+            if ($op == '/') {
+                if ($n == 0) $n = $dsOrder[$i];
+
+                $ds = $dsOrder[$i + 1];
+                $n = $n - $ds + 1;
+    
+                if ($n <= 0) return false;
+
+                continue;
+            } 
+
+            $n = 0;
+        }
+
+        return true;
     }
 
     public static function isOrdersValidForOnlyIntegerAnswers($opOrder, $dsOrder) {
@@ -38,7 +96,9 @@ class ENGINE_AUTOMCQ {
         if ($dsCounts[$maxDs] > 1 && $expectedNumCount - 2 <= 0) return true; 
 
         // ### maxds number is used
-        $expectedNumCount -= 1; 
+        $expectedNumCount -= 1;
+        
+        if ($expectedNumCount == 0) return true; 
 
         //### remove all maxds values
         $dsCountsKeys = array_diff($dsCountsKeys, array_fill(0, $dsCounts[$maxDs], $maxDs));
@@ -61,10 +121,6 @@ class ENGINE_AUTOMCQ {
         }
 
         return false;
-    }
-
-    public static function generateQuestion($opOrder, $dsOrder) {
-
     }
 
     private static function resolveDivitionForOnlyIntegers($dsOrder) {
