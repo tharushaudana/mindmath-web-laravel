@@ -25,6 +25,9 @@
     <div class="w-100 h-100" style="position: relative;">
         @yield('content')
     </div>
+    <!-- jQuery -->
+    <script src="{{ asset('assets/admin/plugins/jquery/jquery.min.js') }}"></script>
     @livewireScripts
+    @stack('scripts')
 </body>
 </html>

@@ -3,21 +3,27 @@
 namespace App\Http\Controllers\student;
 
 use App\Http\Controllers\Controller;
+use App\Models\StudentAttempt;
 use App\Models\Test;
+use Carbon\Carbon;
 use ENGINE_AUTOMCQ;
 use ENGINE_TOOLS;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use McqHelper;
+
+include 'helpers/test/helper.php';
 
 class TestController extends Controller
 {
     public function index(Test $test) {
-        $previousOpOrders = [];
+        /*$previousOpOrders = [];
         $previousNumberSets = [];
 
-        $nq = 82;
+        $nq = 40;
         //$oo = ['+', '*', '/', '/', '/', '*', '-'];
         //$do = [2, 2, 3, 2, 2, 1, 2, 1];
-        $oo = ['/'];
+        $oo = ['+'];
         $do = [1,1];
         $io = true;
         $soo = true;
@@ -55,12 +61,46 @@ class TestController extends Controller
             array_push($test, $exp);
         }
 
-        dd($test);
+        dd($test);*/
 
-        //dd($this->generateExpressions($oo, $do));
+        if ($test->grade->id != Auth::guard('student')->user()->grade->id) abort(404);
 
-        //return view('student.test');
+        return view('student.test.welcome', [
+            'test' => $test
+        ]);
     }
+
+    public function ready(Test $test) {
+        if ($test->grade->id != Auth::guard('student')->user()->grade->id) abort(404);
+
+        if (Auth::guard('student')->user()->attempts->count() == $test->max_attempts) return response('Bad Request', 400);
+
+        return view('student.test.ready', [
+            'test' => $test
+        ]);
+    }
+
+    public function attempt(Test $test) {
+        if ($test->grade->id != Auth::guard('student')->user()->grade->id) abort(404);
+
+        if (Auth::guard('student')->user()->attempts->count() == $test->max_attempts) return response('Bad Request', 400);
+
+        //### save attempt
+
+        $attempt = new StudentAttempt();
+        $attempt->test_id = $test->id;
+        $attempt->student_id = Auth::guard('student')->user()->id;
+        $attempt->expire_at = Carbon::now()->addSeconds($test->config->totalDurationInSecs());
+        $attempt->save();
+
+        //### store questions
+
+        $type = $test->type->name;
+
+        if ($type == 'mcq' && !McqHelper::init($test, $attempt)) return response('Bad Request', 400);
+    }
+
+    //============================
 
     public function showExpression($operations, $numbers) {
         $exp = '';

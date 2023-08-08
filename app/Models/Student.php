@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Model;
@@ -17,8 +18,18 @@ class Student extends Authenticatable
         'grade_id',
     ];
 
-    public function grade()
+    protected $appends = ['grade'];
+
+    public function getGradeAttribute()
     {
-        return $this->belongsTo(Grade::class);
+        return Grade::find($this->grade_id);
+    }
+
+    public function attempts() {
+        return $this->hasMany(StudentAttempt::class, 'student_id');
+    }
+
+    public function currentAttempt() {
+        return StudentAttempt::where('student_id', $this->id)->where('expire_at', '>', Carbon::now())->first();
     }
 }

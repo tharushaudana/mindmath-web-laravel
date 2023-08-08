@@ -17,4 +17,13 @@ class McqTest extends Model
         'struct',
         'shuffle_questions',
     ];
+
+    public function questions() {
+        return $this->hasMany(McqQuestion::class, 'mcq_test_id');
+    }
+
+    public function totalDurationInSecs() {
+        //return $this->dur_per * $this->num_questions + $this->dur_extra;
+        return 3600;
+    }
 }

@@ -20,7 +20,7 @@ class Test extends Model
         'close_at',
     ];
 
-    protected $appends = ['type', 'config'];
+    protected $appends = ['type', 'grade', 'config'];
 
     public function getTypeAttribute()
     {
@@ -48,22 +48,8 @@ class Test extends Model
         }
     }
 
-    /*public function type()
+    public function getGradeAttribute()
     {
-        return $this->belongsTo(TestType::class, 'test_type_id');
-    }*/
-
-    public function grade()
-    {
-        return $this->belongsTo(Grade::class);
+        return Grade::find($this->grade_id);
     }
-
-    /*public function config() {
-        if ($this->type->name == 'mcq') {
-            $relation = $this->hasOne(McqTest::class, 'test_id');
-
-            if (is_null($relation)) return new McqTest();
-            return $relation;
-        }
-    }*/
 }
