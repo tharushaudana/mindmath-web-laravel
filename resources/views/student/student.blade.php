@@ -10,6 +10,7 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="{{ asset('assets/admin/plugins/fontawesome-free-6.4.2/css/all.min.css') }}">
     @livewireStyles
+    @stack('styles')
 </head>
 <style>
     html {

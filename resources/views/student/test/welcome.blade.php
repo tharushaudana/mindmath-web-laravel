@@ -92,10 +92,7 @@
                     </div>
 
                     <div class="w-100" style="position: absolute; bottom: 30px; display: flex; justify-content: center; align-items: center;">
-                        <form method="POST" action="{{ route('student.test.ready', $test->id) }}">
-                            @csrf
-                            <button class="btn btn-warning rounded-pill">GO QUICK</button>
-                        </form>
+                        <a href="{{ route('student.test.questions.automcq', $test->id) }}"><button class="btn btn-warning rounded-pill">GO QUICK</button></a>
                     </div>
                 @endif
 
