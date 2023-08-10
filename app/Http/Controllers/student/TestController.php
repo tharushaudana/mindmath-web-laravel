@@ -63,7 +63,13 @@ class TestController extends Controller
 
         dd($test);*/
 
-        if ($test->grade->id != Auth::guard('student')->user()->grade->id) abort(404);
+        if (!$this->validateGrade($test)) abort(404);
+
+        $currentAttempt = Auth::guard('student')->user()->currentAttempt();
+        
+        if (!is_null($currentAttempt) && $currentAttempt->test_id != $test->id) {
+            return redirect()->route('student.test', $currentAttempt->test_id);
+        }
 
         return view('student.test.welcome', [
             'test' => $test
@@ -71,7 +77,7 @@ class TestController extends Controller
     }
 
     public function ready(Test $test) {
-        if ($test->grade->id != Auth::guard('student')->user()->grade->id) abort(404);
+        if (!$this->validateGrade($test)) abort(404);
 
         if (Auth::guard('student')->user()->attempts->count() == $test->max_attempts) return response('Bad Request', 400);
 
@@ -81,7 +87,7 @@ class TestController extends Controller
     }
 
     public function attempt(Test $test) {
-        if ($test->grade->id != Auth::guard('student')->user()->grade->id) abort(404);
+        if (!$this->validateGrade($test)) abort(404);
 
         if (Auth::guard('student')->user()->attempts->count() == $test->max_attempts) return response('Bad Request', 400);
 
@@ -98,6 +104,11 @@ class TestController extends Controller
         $type = $test->type->name;
 
         if ($type == 'mcq' && !McqHelper::init($test, $attempt)) return response('Bad Request', 400);
+    }
+
+    private function validateGrade($test) {
+        if (is_null($test->grade)) return true;
+        return $test->grade->id == Auth::guard('student')->user()->grade->id;
     }
 
     //============================

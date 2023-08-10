@@ -26,7 +26,7 @@ class McqQuestion extends Model
     }
 
     public function timeLeft($dur) {
-        return 5;
+        //return 5;
         if (is_null($this->loaded_at)) return 0;
         return $dur - Carbon::now()->diffInSeconds($this->loaded_at);
     }

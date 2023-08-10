@@ -11,18 +11,17 @@ use Illuminate\Support\Facades\Auth;
 
 class AutoMcqController extends Controller
 {
-    public function get(Test $test) {
+    public function get(Test $test, $clickNext = false) {
         $attempt = null;
 
-        if (!$this->validateAttempt($test, $attempt)) abort(404);
+        if (!$this->validateAttempt($test, $attempt)) return redirect()->route('student.test', $test->id);
 
         $durPer = $test->config->dur_per;
 
         $question = $test->config->lastLoadedQuestionOfAttempt($attempt);
 
-        if (is_null($question) || (($question->isExpired($durPer) || !is_null($question->studentAnswer())) && !$question->isLast())) {
-            $question = $test->config->nextQuestionOfAttempt($attempt);
-            $question->loaded_at = Carbon::now()->addSeconds(2);
+        if (is_null($question) || (($clickNext || $question->isExpired($durPer) || !is_null($question->studentAnswer())) && !$question->isLast())) {
+            $question = $this->nextQuestion($test, $attempt);
             //$question->save();
         }
 
@@ -31,6 +30,16 @@ class AutoMcqController extends Controller
             'attempt' => $attempt,
             'question' => $question,
         ]);
+    }
+
+    public function getNext(Test $test) {
+        return $this->get($test, true);
+    }
+
+    private function nextQuestion($test, $attempt) {
+        $question = $test->config->nextQuestionOfAttempt($attempt);
+        $question->loaded_at = Carbon::now()->addSeconds(2);
+        return $question;
     }
 
     private function validateAttempt($test, &$attempt) {

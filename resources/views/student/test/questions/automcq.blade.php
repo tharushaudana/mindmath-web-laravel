@@ -63,16 +63,11 @@
                     </div>
 
                     <div class="mt-4" id="answers-container">
-                        @php
-                            $answers = json_decode($question->answers, true);
-                        @endphp
-
-                        @foreach ($answers as $i => $answer)
-                        <div class="w-100 px-4 rounded-4 mb-2 ans-card" style="background-color: #EDE4FF; color: #6F61C0; font-weight: bold; position: relative;">
-                            {{ $answer }}
-                            <span style="position: absolute; right: 0; margin-right: 20px;"><i class="fa-solid fa-chevron-right"></i></span>
-                        </div>                        
-                        @endforeach
+                        @livewire('student.test.auto-mcq-answer-box', [
+                            'question' => $question,
+                            'test' => $test,
+                            'attempt' => $attempt
+                        ])
                     </div>
 
                     <div class="mt-5" id="expired-container" style="display: none;">
@@ -105,9 +100,12 @@
             <div class="rounded-pill" style="width: 180px; height: 60px; border: 1px solid #6F61C0; padding: 1px 4px;">
                 <div class="rounded-pill" style="width: 100%; height: 100%; border: 1px solid #6F61C0; padding: 1px 4px;">
                     <div class="rounded-pill" style="width: 100%; height: 100%; border: 1px solid #6F61C0; padding: 1px 4px;">
-                        <button class="rounded-pill" style="width: 100%; height: 100%; border: none; color: white; background-color: #6F61C0; padding: 1px 4px; box-shadow: 0px 5px 10px 0px #6F61C0; font-weight: bold;">
-                            Next
-                        </button>
+                        <form method="POST" action="" style="width: 100%; height: 100%;">
+                            @csrf
+                            <button class="rounded-pill" style="width: 100%; height: 100%; border: none; color: white; background-color: #6F61C0; padding: 1px 4px; box-shadow: 0px 5px 10px 0px #6F61C0; font-weight: bold;">
+                                Next
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
