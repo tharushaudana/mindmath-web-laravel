@@ -54,7 +54,8 @@ class AutoMcqAnswerBox extends Component
     public function render()
     {
         return view('livewire.student.test.auto-mcq-answer-box', [
-            'question' => $this->question
+            'question' => $this->question,
+            'test' => $this->test,
         ]);
     }
 }

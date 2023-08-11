@@ -89,6 +89,8 @@ class TestController extends Controller
     public function attempt(Test $test) {
         if (!$this->validateGrade($test)) abort(404);
 
+        if (!$test->isOpen()) return redirect()->route('student.test', $test->id);
+
         if (Auth::guard('student')->user()->attempts($test)->count() == $test->max_attempts) return response('Bad Request', 400);
 
         //### save attempt

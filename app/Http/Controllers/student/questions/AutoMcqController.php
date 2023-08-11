@@ -16,11 +16,9 @@ class AutoMcqController extends Controller
 
         if (!$this->validateAttempt($test, $attempt)) return redirect()->route('student.test', $test->id);
 
-        $durPer = $test->config->dur_per;
-
         $question = $test->config->lastLoadedQuestionOfAttempt($attempt);
 
-        if (is_null($question) || (($clickNext || $question->isExpired($durPer) || !is_null($question->studentAnswer())) && !$question->isLast())) {
+        if (is_null($question) || ($clickNext && !$question->isLast())) {
             $question = $this->nextQuestion($test, $attempt);
             $question->save();
         }

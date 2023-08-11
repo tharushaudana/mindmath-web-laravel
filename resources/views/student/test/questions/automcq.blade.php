@@ -9,8 +9,14 @@
                 <br>
                 <h3 class="test-name"><b>{{ $test->name }}</b></h3>
             </div>
-            <span class="time-left">
-                1<span style="opacity: 0.6">:</span>59<span style="opacity: 0.6">:</span>00&nbsp;&nbsp;<i class="fa-solid fa-stopwatch" style="opacity: 0.8;"></i>
+            <span class="time-left" style="font-family: 'Courier New', Courier, monospace;">
+                <span id="tleft-hrs">_</span>
+                <span style="opacity: 0.6">:</span>
+                <span id="tleft-mins">_</span>
+                <span style="opacity: 0.6">:</span>
+                <span id="tleft-secs">_</span>
+                &nbsp;
+                <i class="fa-solid fa-stopwatch" style="opacity: 0.8;"></i>
             </span>
         </div>
         <div class="w-100 mt-3" style="position: relative; display: flex; justify-content: center; align-items: center; height: 68%;">
@@ -35,10 +41,13 @@
                             </div>
                             <div class="mt-2"></div>
                             What is the answer? 
-                            <div style="font-weight: bold;">
+                            <div class="mt-2" style="font-weight: bold;">
                                 <table>
                                     @php
-                                        $questionItems = str_split($question->question);
+                                        $chars = str_split($question->question);
+
+                                        $questionItems = [];
+                                        $item = '';
     
                                         $symbolNames = [
                                             '+' => 'plus',
@@ -46,9 +55,21 @@
                                             '*' => 'xmark',
                                             '/' => 'divide'
                                         ];
+
+                                        foreach ($chars as $c) {
+                                            if (in_array($c, array_keys($symbolNames))) {
+                                                array_push($questionItems, $item);
+                                                array_push($questionItems, $c);
+                                                $item = '';
+                                            } else {
+                                                $item .= $c;
+                                            }
+                                        }
+
+                                        array_push($questionItems, $item);
                                     @endphp
     
-                                    <tr>
+                                    <tr class="bg-dark">
                                         @foreach ($questionItems as $item)
                                             @if (in_array($item, ['+', '-', '*', '/']))
                                             <td><span class="exp-symbol" style="color: #FFE5AD;"><i class="fa-sharp fa-solid fa-{{ $symbolNames[$item] }}"></i></span></td>
@@ -78,9 +99,10 @@
                     @push('scripts')
                     <script>
                         const durPer = {{ $test->config->dur_per }};
-                        var qMillis = {{ $question->timeLeft($test->config->dur_per) }} * 1000;
 
-                        var selectedAnswer = -1;
+                        var qMillis = {{ $question->timeLeft($test->config->dur_per) }} * 1000;
+                        
+                        var tSecs = {{ \Carbon\Carbon::parse($attempt->expire_at)->diffInSeconds(\Carbon\Carbon::now()) }};
 
                         const qInterval = setInterval(() => {
                             qMillis -= 10;
@@ -91,6 +113,25 @@
                                 clearInterval(qInterval);
                             }
                         }, 10);
+                            
+                        const tInterval = setInterval(() => {
+                            tSecs--;
+
+                            var h = parseInt(tSecs / 3600);
+                            var m = parseInt((tSecs % 3600) / 60);
+                            var s = tSecs - h*3600 - m*60;
+
+                            if (tSecs >= 0) {
+                                $('#tleft-hrs').html(`${('00'+h).slice(-2)}`);
+                                $('#tleft-mins').html(`${('00'+m).slice(-2)}`);
+                                $('#tleft-secs').html(`${('00'+s).slice(-2)}`);
+                            }
+
+                            if (tSecs == -1) {
+                                clearInterval(tInterval);
+                                location.reload();
+                            } 
+                        }, 1000);
                     </script>
                     @endpush
                 </div>
@@ -120,7 +161,7 @@
         }
 
         .info-box .time-left {
-            font-size: 20px;
+            font-size: 17px;
         }
 
         .exp-symbol {

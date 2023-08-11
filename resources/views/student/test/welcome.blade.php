@@ -12,52 +12,59 @@
                     </h1>
 
                     @if (is_null(Auth::guard('student')->user()->currentAttempt()))
-                        @if (Auth::guard('student')->user()->attempts($test)->count() < $test->max_attempts)
-                            <div class="p-3">
-                                @if (Auth::guard('student')->user()->attempts($test)->count() > 0)
-                                <p class="text-danger" align="center" style="font-size: 12px;">
-                                    {{ Auth::guard('student')->user()->attempts($test)->count() }} attempt(s) already used.
-                                    <br>
-                                    <b>{{ $test->max_attempts - Auth::guard('student')->user()->attempts($test)->count() }} more attempts left.</b>
-                                </p>
-                                @endif
-                                <ul class="mt-4">
-                                    <li><span><b style="color: #6528F7;">{{ $test->config->num_questions }}</b> Questions</span></li>
-                                    <li><span><b style="color: #6528F7;">{{ $test->config->dur_per }} secs</b> for Per Question</span></li>        
-                                    <li><span><b style="color: #6528F7;">{{ \Carbon\CarbonInterval::seconds($test->config->totalDurationInSecs())->cascade()->forHumans(['join' => true, 'parts' => 2, 'long' => true ]) }}</b> of Total Duration</span></li>
-                                </ul>
-                            </div>
+                        @if ($test->isOpen())
+                            @if (Auth::guard('student')->user()->attempts($test)->count() < $test->max_attempts)
+                                <div class="p-3">
+                                    @if (Auth::guard('student')->user()->attempts($test)->count() > 0)
+                                    <p class="text-danger" align="center" style="font-size: 12px;">
+                                        {{ Auth::guard('student')->user()->attempts($test)->count() }} attempt(s) already used.
+                                        <br>
+                                        <b>{{ $test->max_attempts - Auth::guard('student')->user()->attempts($test)->count() }} more attempts left.</b>
+                                    </p>
+                                    @endif
+                                    <ul class="mt-4">
+                                        <li><span><b style="color: #6528F7;">{{ $test->config->num_questions }}</b> Questions</span></li>
+                                        <li><span><b style="color: #6528F7;">{{ $test->config->dur_per }} secs</b> for Per Question</span></li>        
+                                        <li><span><b style="color: #6528F7;">{{ \Carbon\CarbonInterval::seconds($test->config->totalDurationInSecs())->cascade()->forHumans(['join' => true, 'parts' => 2, 'long' => true ]) }}</b> of Total Duration</span></li>
+                                    </ul>
+                                </div>
 
-                            <div style="height: 30px;"></div>
+                                <div style="height: 30px;"></div>
 
-                            <div class="w-100" style="display: flex; justify-content: center; align-items: center;">
-                                <form method="POST" action="{{ route('student.test.ready', $test->id) }}">
-                                    @csrf
-                                    <button class="btn btn-outline-primary rounded-pill">I'M READY</button>
-                                </form>
-                            </div>                        
+                                <div class="w-100" style="display: flex; justify-content: center; align-items: center;">
+                                    <form method="POST" action="{{ route('student.test.ready', $test->id) }}">
+                                        @csrf
+                                        <button class="btn btn-outline-primary rounded-pill">I'M READY</button>
+                                    </form>
+                                </div>                        
+                            @else
+                                <h5 align="center" class="text-danger mt-3"><b>No more Attempts for You!</b></h5>
+                            @endif
                         @else
-                            <h5 align="center" class="text-danger mt-3"><b>No more Attempts for You!</b></h5>
+                            <h5 align="center" class="text-danger mt-3"><b>Test Closed</b></h5>
+                            <p class="text-danger" align="center" style="font-size: 12px;">Can't attempt at this time.</p>
                         @endif
 
                         <div style="height: 20px;"></div>
 
-                        <div class="p-3" style="border-top: 1px solid #A076F9;">
-                            @foreach (Auth::guard('student')->user()->attempts($test) as $i => $attempt)
-                            <div class="card mb-1 border-0" style="background-color: #8BE8E5;">
-                                <div class="card-body p-1 d-flex justify-content-between align-items-center">
-                                    <span style="font-size: 13px;">Attempt #{{ $i + 1 }}</span>
-                                    <span style="font-size: 13px; font-weight: bold;">{{ $attempt->calcMarks() }} %</span>
+                        @if (Auth::guard('student')->user()->attempts($test)->count() > 0)
+                            <div class="p-3" style="border-top: 1px solid #A076F9;">
+                                @foreach (Auth::guard('student')->user()->attempts($test) as $i => $attempt)
+                                <div class="card mb-1 border-0" style="background-color: #8BE8E5;">
+                                    <div class="card-body p-1 d-flex justify-content-between align-items-center">
+                                        <span style="font-size: 13px;">Attempt #{{ $i + 1 }}</span>
+                                        <span style="font-size: 13px; font-weight: bold;">{{ $attempt->calcMarks() }} %</span>
+                                    </div>
                                 </div>
+                                @endforeach
                             </div>
-                            @endforeach
-                        </div>
+                        @endif
                     @else
                         <div class="p-3">
                             <h5 align="center" class="text-danger mt-3"><b>Already Attempted</b></h5>
 
                             @if (Auth::guard('student')->user()->attempts($test)->count() > 1)
-                            <p class="text-danger" align="center" style="font-size: 12px;">attempt <b>#{{ Auth::guard('student')->user()->attempts->count() }}</b></p>
+                            <p class="text-danger" align="center" style="font-size: 12px;">attempt <b>#{{ Auth::guard('student')->user()->attempts($test)->count() }}</b></p>
                             @endif
 
                             <p class="text-muted mt-5" align="center" style="font-size: 12px;">time left</p>

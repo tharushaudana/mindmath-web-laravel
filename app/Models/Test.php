@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -52,5 +53,9 @@ class Test extends Model
     public function getGradeAttribute()
     {
         return Grade::find($this->grade_id);
+    }
+
+    public function isOpen() {
+        return Carbon::parse($this->open_at)->isPast() && Carbon::parse($this->close_at)->isFuture();
     }
 }
