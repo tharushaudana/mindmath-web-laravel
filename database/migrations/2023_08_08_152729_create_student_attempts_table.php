@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('test_id')->nullable(false);
             $table->unsignedBigInteger('student_id')->nullable(false);
             $table->float('marks', 4, 2)->default(0);
-            $table->timestamp('expire_at')->nullable(false);
+            $table->timestamp('expire_at')->nullable(true);
             $table->timestamp('finished_at')->nullable(true);
             $table->timestamps();
             $table->foreign('test_id')

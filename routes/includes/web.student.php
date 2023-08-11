@@ -17,6 +17,7 @@ Route::middleware('auth:student')->group(function () {
             //### AutoMcq
             Route::get('/automcq', [AutoMcqController::class, 'get'])->name('student.test.questions.automcq');
             Route::post('/automcq', [AutoMcqController::class, 'getNext']);
+            Route::post('/automcq/finish', [AutoMcqController::class, 'finish'])->name('student.test.questions.automcq.finish');
         });
     });
 });

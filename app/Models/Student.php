@@ -25,11 +25,11 @@ class Student extends Authenticatable
         return Grade::find($this->grade_id);
     }
 
-    public function attempts() {
-        return $this->hasMany(StudentAttempt::class, 'student_id');
+    public function attempts(Test $test) {
+        return StudentAttempt::where('student_id', $this->id)->where('test_id', $test->id)->get();
     }
 
     public function currentAttempt() {
-        return StudentAttempt::where('student_id', $this->id)->where('expire_at', '>', Carbon::now())->first();
+        return StudentAttempt::where('student_id', $this->id)->where('finished_at', null)->where('expire_at', '>', Carbon::now())->first();
     }
 }

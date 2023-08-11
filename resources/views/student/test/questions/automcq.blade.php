@@ -62,7 +62,7 @@
                         </div>
                     </div>
 
-                    <div class="mt-4" id="answers-container">
+                    <div class="mt-4" id="answers-container" style="display: {{ $question->isExpired($test->config->dur_per) ? 'none' : 'block' }};">
                         @livewire('student.test.auto-mcq-answer-box', [
                             'question' => $question,
                             'test' => $test,
@@ -70,7 +70,7 @@
                         ])
                     </div>
 
-                    <div class="mt-5" id="expired-container" style="display: none;">
+                    <div class="mt-5" id="expired-container" style="display: {{ $question->isExpired($test->config->dur_per) ? 'block' : 'none' }};">
                         <h5 class="text-danger" style="font-weight: bold;" align="center">Question Expired!</h5>
                         <p class="text-danger" style="font-size: 12px;" align="center">You can't answer to this question. Please click on the <b>Next</b> button for load next question.</p>
                     </div>
@@ -100,10 +100,10 @@
             <div class="rounded-pill" style="width: 180px; height: 60px; border: 1px solid #6F61C0; padding: 1px 4px;">
                 <div class="rounded-pill" style="width: 100%; height: 100%; border: 1px solid #6F61C0; padding: 1px 4px;">
                     <div class="rounded-pill" style="width: 100%; height: 100%; border: 1px solid #6F61C0; padding: 1px 4px;">
-                        <form method="POST" action="" style="width: 100%; height: 100%;">
+                        <form method="POST" action="{{ $question->isLast() ? route('student.test.questions.automcq.finish', $test->id) : '' }}" style="width: 100%; height: 100%;">
                             @csrf
                             <button class="rounded-pill" style="width: 100%; height: 100%; border: none; color: white; background-color: #6F61C0; padding: 1px 4px; box-shadow: 0px 5px 10px 0px #6F61C0; font-weight: bold;">
-                                Next
+                                {{ $question->isLast() ? 'Finish' : 'Next' }}
                             </button>
                         </form>
                     </div>

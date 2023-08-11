@@ -3,55 +3,60 @@
 @section('content')
     <div class="w-100 h-100" style="position: relative; background-image: url('{{ asset('assets/student/images/bg3.jpg') }}'); background-color: rgba(237,228,255,1); background-blend-mode: lighten;">
         <div class="w-100 h-100" style="position: absolute; display: flex; justify-content: center; align-items: center;">
-            <div class="rounded-5 shadow-lg p-0" style="width: 300px; height: 400px; backdrop-filter: blur(5px); position: relative; border: 1px solid #A076F9;">
-                @if (is_null(Auth::guard('student')->user()->currentAttempt()))
-                    @if (Auth::guard('student')->user()->attempts->count() < $test->max_attempts)
-                        <div class="w-100 p-3">
-                            <h1 class="mt-3" align="center" style="color: #6528F7;">
-                                <b>{{ $test->name }}</b>
-                                <br>
-                                <span class="text-muted" style="font-size: 14px; font-weight: bold;">{{ $test->type->description }}</span>
-                            </h1>
-                            @if (Auth::guard('student')->user()->attempts->count() > 0)
-                            <p class="text-danger" align="center" style="font-size: 12px;">
-                                {{ Auth::guard('student')->user()->attempts->count() }} attempt(s) already used.
-                                <br>
-                                <b>{{ $test->max_attempts - Auth::guard('student')->user()->attempts->count() }} more attempts left.</b>
-                            </p>
-                            @endif
-                            <ul class="mt-4">
-                                <li><span><b style="color: #6528F7;">{{ $test->config->num_questions }}</b> Questions</span></li>
-                                <li><span><b style="color: #6528F7;">{{ $test->config->dur_per }} secs</b> for Per Question</span></li>        
-                                <li><span><b style="color: #6528F7;">{{ \Carbon\CarbonInterval::seconds($test->config->totalDurationInSecs())->cascade()->forHumans(['join' => true, 'parts' => 2, 'long' => true ]) }}</b> of Total Duration</span></li>
-                            </ul>
+            <div class="rounded-5 shadow-lg p-0" style="width: 300px; backdrop-filter: blur(5px); position: relative; border: 1px solid #A076F9;">
+                <div class="w-100">
+                    <h1 class="mt-3 p-3" align="center" style="color: #6528F7;">
+                        <b>{{ $test->name }}</b>
+                        <br>
+                        <span class="text-muted" style="font-size: 14px; font-weight: bold;">{{ $test->type->description }}</span>
+                    </h1>
+
+                    @if (is_null(Auth::guard('student')->user()->currentAttempt()))
+                        @if (Auth::guard('student')->user()->attempts($test)->count() < $test->max_attempts)
+                            <div class="p-3">
+                                @if (Auth::guard('student')->user()->attempts($test)->count() > 0)
+                                <p class="text-danger" align="center" style="font-size: 12px;">
+                                    {{ Auth::guard('student')->user()->attempts($test)->count() }} attempt(s) already used.
+                                    <br>
+                                    <b>{{ $test->max_attempts - Auth::guard('student')->user()->attempts($test)->count() }} more attempts left.</b>
+                                </p>
+                                @endif
+                                <ul class="mt-4">
+                                    <li><span><b style="color: #6528F7;">{{ $test->config->num_questions }}</b> Questions</span></li>
+                                    <li><span><b style="color: #6528F7;">{{ $test->config->dur_per }} secs</b> for Per Question</span></li>        
+                                    <li><span><b style="color: #6528F7;">{{ \Carbon\CarbonInterval::seconds($test->config->totalDurationInSecs())->cascade()->forHumans(['join' => true, 'parts' => 2, 'long' => true ]) }}</b> of Total Duration</span></li>
+                                </ul>
+                            </div>
+
+                            <div style="height: 30px;"></div>
+
+                            <div class="w-100" style="display: flex; justify-content: center; align-items: center;">
+                                <form method="POST" action="{{ route('student.test.ready', $test->id) }}">
+                                    @csrf
+                                    <button class="btn btn-outline-primary rounded-pill">I'M READY</button>
+                                </form>
+                            </div>                        
+                        @else
+                            <h5 align="center" class="text-danger mt-3"><b>No more Attempts for You!</b></h5>
+                        @endif
+
+                        <div style="height: 20px;"></div>
+
+                        <div class="p-3" style="border-top: 1px solid #A076F9;">
+                            @foreach (Auth::guard('student')->user()->attempts($test) as $i => $attempt)
+                            <div class="card mb-1 border-0" style="background-color: #8BE8E5;">
+                                <div class="card-body p-1 d-flex justify-content-between align-items-center">
+                                    <span style="font-size: 13px;">Attempt #{{ $i + 1 }}</span>
+                                    <span style="font-size: 13px; font-weight: bold;">{{ $attempt->calcMarks() }} %</span>
+                                </div>
+                            </div>
+                            @endforeach
                         </div>
-
-                        <div class="w-100" style="position: absolute; bottom: 30px; display: flex; justify-content: center; align-items: center;">
-                            <form method="POST" action="{{ route('student.test.ready', $test->id) }}">
-                                @csrf
-                                <button class="btn btn-outline-primary rounded-pill">I'M READY</button>
-                            </form>
-                        </div>                        
                     @else
-                        <h1 class="mt-3" align="center" style="color: #6528F7;">
-                            <b>{{ $test->name }}</b>
-                            <br>
-                            <span class="text-muted" style="font-size: 14px; font-weight: bold;">{{ $test->type->description }}</span>
-                        </h1>
-                        <h5 align="center" class="text-danger mt-3"><b>No more Attempts for You!</b></h5>
-                    @endif
-                @else
-                    <div class="w-100 p-3">
-                        <h1 class="mt-3" align="center" style="color: #6528F7;">
-                            <b>{{ $test->name }}</b>
-                            <br>
-                            <span class="text-muted" style="font-size: 14px; font-weight: bold;">{{ $test->type->description }}</span>
-                        </h1>
-
-                        <div>
+                        <div class="p-3">
                             <h5 align="center" class="text-danger mt-3"><b>Already Attempted</b></h5>
 
-                            @if (Auth::guard('student')->user()->attempts->count() > 1)
+                            @if (Auth::guard('student')->user()->attempts($test)->count() > 1)
                             <p class="text-danger" align="center" style="font-size: 12px;">attempt <b>#{{ Auth::guard('student')->user()->attempts->count() }}</b></p>
                             @endif
 
@@ -89,12 +94,17 @@
                             }, 1000);
                         </script>
                         @endpush
-                    </div>
 
-                    <div class="w-100" style="position: absolute; bottom: 30px; display: flex; justify-content: center; align-items: center;">
-                        <a href="{{ route('student.test.questions.automcq', $test->id) }}"><button class="btn btn-warning rounded-pill">GO QUICK</button></a>
-                    </div>
-                @endif
+                        <div style="height: 40px;"></div>
+
+                        <div class="w-100" style="display: flex; justify-content: center; align-items: center;">
+                            <a href="{{ route('student.test.questions.automcq', $test->id) }}"><button class="btn btn-warning rounded-pill">GO QUICK</button></a>
+                        </div>
+
+                        <div style="height: 20px;"></div>
+                    @endif
+
+                </div>
 
             </div>
         </div>

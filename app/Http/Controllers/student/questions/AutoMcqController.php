@@ -22,7 +22,7 @@ class AutoMcqController extends Controller
 
         if (is_null($question) || (($clickNext || $question->isExpired($durPer) || !is_null($question->studentAnswer())) && !$question->isLast())) {
             $question = $this->nextQuestion($test, $attempt);
-            //$question->save();
+            $question->save();
         }
 
         return view('student.test.questions.automcq', [
@@ -34,6 +34,19 @@ class AutoMcqController extends Controller
 
     public function getNext(Test $test) {
         return $this->get($test, true);
+    }
+
+    public function finish(Test $test) {
+        $attempt = null;
+
+        if (!$this->validateAttempt($test, $attempt)) return redirect()->route('student.test', $test->id);
+
+        $attempt->calcMarks();
+
+        $attempt->finished_at = Carbon::now();
+        $attempt->save();
+
+        return redirect()->route('student.test', $test->id);
     }
 
     private function nextQuestion($test, $attempt) {

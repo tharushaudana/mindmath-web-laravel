@@ -4,7 +4,7 @@ use App\Models\McqQuestion;
 
 class McqHelper {
     public static function init($test, $attempt) {
-        if ($test->config->questions->count() > 0) return false;
+        if ($test->config->questions($attempt)->count() > 0) return false;
 
         $struct = json_decode($test->config->struct, true);
 

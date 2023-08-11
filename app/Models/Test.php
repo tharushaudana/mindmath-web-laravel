@@ -33,6 +33,7 @@ class Test extends Model
 
         if (is_null($type)) return null;
         
+        //### AUTOMCQ
         if ($type->name == 'mcq') {
             $c = McqTest::where('test_id', $this->id)->first();
             

@@ -18,16 +18,17 @@ class McqTest extends Model
         'shuffle_questions',
     ];
 
-    public function questions() {
-        return $this->hasMany(McqQuestion::class, 'mcq_test_id');
+    public function questions(StudentAttempt $attempt) {
+        //return McqQuestion::where('mcq_test_id', $this->id)->where('attempt_id')                
+        return $this->hasMany(McqQuestion::class, 'mcq_test_id')->where('attempt_id', $attempt->id);
     }
 
     public function lastLoadedQuestionOfAttempt(StudentAttempt $attempt) {
-        return McqQuestion::where('mcq_test_id', $this->id)->where('loaded_at', '!=', null)->orderBy('id', 'desc')->first();
+        return McqQuestion::where('mcq_test_id', $this->id)->where('attempt_id', $attempt->id)->where('loaded_at', '!=', null)->orderBy('id', 'desc')->first();
     }
 
     public function nextQuestionOfAttempt(StudentAttempt $attempt) {
-        return McqQuestion::where('mcq_test_id', $this->id)->where('loaded_at', null)->orderBy('id', 'asc')->first();
+        return McqQuestion::where('mcq_test_id', $this->id)->where('attempt_id', $attempt->id)->where('loaded_at', null)->orderBy('id', 'asc')->first();
     }
 
     public function totalDurationInSecs() {
