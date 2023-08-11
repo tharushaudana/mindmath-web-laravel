@@ -131,7 +131,7 @@ class Tests extends Component
     public function render()
     {
         return view('livewire.admin.manage.tests.tests')
-            ->with('tests', Test::all())
+            ->with('tests', Test::orderBy('id', 'desc')->get())
             ->with('grades', Grade::all())
             ->with('types', TestType::all());
     }

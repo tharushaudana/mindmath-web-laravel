@@ -45,7 +45,8 @@ class LoginRegister extends Component
 
         if (Auth::guard('student')->attempt($validated)) {
             if (!is_null($this->to)) {
-                return redirect()->route($this->to);
+                //return redirect()->route($this->to);
+                return redirect()->route('student.home');
             } else {
                 return redirect()->route('student.home');
             }

@@ -41,18 +41,31 @@
                                 <h5 align="center" class="text-danger mt-3"><b>No more Attempts for You!</b></h5>
                             @endif
                         @else
+                            @if ($test->isClosed())
                             <h5 align="center" class="text-danger mt-3"><b>Test Closed</b></h5>
                             <p class="text-danger" align="center" style="font-size: 12px;">Can't attempt at this time.</p>
+                            @else
+                            <p class="text-danger" align="center" style="font-size: 12px;">Not Opened Yet</p>
+                            <p align="center">
+                                <span style="font-size: 14px;">Sheduled to</span>
+                                <br>
+                                <b>{{ \Carbon\Carbon::parse($test->open_at)->format('F j \a\t g:i A') }}</b>
+                            </p>
+                            @endif
                         @endif
 
                         <div style="height: 20px;"></div>
 
-                        @if (Auth::guard('student')->user()->attempts($test)->count() > 0)
+                        @php
+                            $acount = Auth::guard('student')->user()->attempts($test)->count();
+                        @endphp
+                        
+                        @if ($acount > 0)
                             <div class="p-3" style="border-top: 1px solid #A076F9;">
                                 @foreach (Auth::guard('student')->user()->attempts($test) as $i => $attempt)
-                                <div class="card mb-1 border-0" style="background-color: #8BE8E5;">
+                                <div class="card mb-1" style="background-color: #8BE8E5; {{ $i == 0 ? 'border: 2px solid #A076F9;' : 'border: none;' }}">
                                     <div class="card-body p-1 d-flex justify-content-between align-items-center">
-                                        <span style="font-size: 13px;">Attempt #{{ $i + 1 }}</span>
+                                        <span style="font-size: 13px;">Attempt #{{ $acount - $i }}</span>
                                         <span style="font-size: 13px; font-weight: bold;">{{ $attempt->calcMarks() }} %</span>
                                     </div>
                                 </div>

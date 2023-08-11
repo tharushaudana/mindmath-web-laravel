@@ -58,4 +58,8 @@ class Test extends Model
     public function isOpen() {
         return Carbon::parse($this->open_at)->isPast() && Carbon::parse($this->close_at)->isFuture();
     }
+
+    public function isClosed() {
+        return Carbon::parse($this->close_at)->isPast();
+    }
 }

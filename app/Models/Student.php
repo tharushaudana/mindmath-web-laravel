@@ -26,7 +26,7 @@ class Student extends Authenticatable
     }
 
     public function attempts(Test $test) {
-        return StudentAttempt::where('student_id', $this->id)->where('test_id', $test->id)->get();
+        return StudentAttempt::where('student_id', $this->id)->where('test_id', $test->id)->orderBy('id', 'desc')->get();
     }
 
     public function currentAttempt() {

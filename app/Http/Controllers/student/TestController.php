@@ -63,7 +63,7 @@ class TestController extends Controller
 
         dd($test);*/
 
-        if (!$this->validateGrade($test)) abort(404);
+        if (!$this->validateTest($test)) abort(404);
 
         $currentAttempt = Auth::guard('student')->user()->currentAttempt();
         
@@ -77,7 +77,7 @@ class TestController extends Controller
     }
 
     public function ready(Test $test) {
-        if (!$this->validateGrade($test)) abort(404);
+        if (!$this->validateTest($test)) abort(404);
 
         if (Auth::guard('student')->user()->attempts($test)->count() == $test->max_attempts) return response('Bad Request', 400);
 
@@ -87,7 +87,7 @@ class TestController extends Controller
     }
 
     public function attempt(Test $test) {
-        if (!$this->validateGrade($test)) abort(404);
+        if (!$this->validateTest($test)) abort(404);
 
         if (!$test->isOpen()) return redirect()->route('student.test', $test->id);
 
@@ -110,7 +110,8 @@ class TestController extends Controller
         return redirect()->route('student.test', $test->id);
     }
 
-    private function validateGrade($test) {
+    private function validateTest($test) {
+        if (is_null($test->config->id)) return false;
         if (is_null($test->grade)) return true;
         return $test->grade->id == Auth::guard('student')->user()->grade->id;
     }
