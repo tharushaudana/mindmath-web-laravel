@@ -78,6 +78,12 @@
               <p>Tests</p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="{{ route('admin.manage.admins') }}" class="nav-link @if(request()->route()->getName() == 'admin.manage.admins') active @endif">
+              <i class="fa-solid fa-users"></i>&nbsp;
+              <p>Admins</p>
+            </a>
+          </li>
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

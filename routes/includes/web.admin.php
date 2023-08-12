@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\HomeController;
+use App\Http\Controllers\admin\manage\AdminsController;
+use App\Http\Controllers\admin\manage\TestsController;
 use App\Http\Controllers\admin\ProfileController;
 use Illuminate\Support\Facades\Route; 
 
@@ -14,8 +16,11 @@ Route::middleware('auth:web')->group(function () {
 
         Route::group(['prefix' => '/manage'], function () {
             Route::group(['prefix' => '/tests'], function () {
-                Route::view('/', 'admin.manage.tests')->name('admin.manage.tests');
-                Route::view('/{test}', 'admin.manage.test')->name('admin.manage.test');
+                Route::view('/', 'admin.manage.tests.index')->name('admin.manage.tests');
+                Route::get('/{test}', [TestsController::class, 'test'])->name('admin.manage.tests.test');
+            });
+            Route::group(['prefix' => '/admins'], function () {
+                Route::get('/', [AdminsController::class, 'index'])->name('admin.manage.admins');
             }); 
         });
     });

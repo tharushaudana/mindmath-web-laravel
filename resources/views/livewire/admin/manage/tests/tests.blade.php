@@ -28,7 +28,7 @@
                         <tbody>
                             @foreach ($tests as $t)
                             <tr class="@if($t->id == $test->id) bg-warning @endif">
-                                <td>{{ $t->id }}</td>
+                                <td><a href="{{ route('admin.manage.tests.test', $t->id) }}">{{ $t->id }}</a></td>
                                 <td>{{ $t->name }}</td>
                                 <td><span class="badge badge-info">{{ Str::upper($t->type->name) }}</span></td>
                                 <td><span class="badge badge-dark">{{ $t->grade ? $t->grade->name : 'Every Grades' }}</span></td>
