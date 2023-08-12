@@ -62,4 +62,30 @@ class Test extends Model
     public function isClosed() {
         return Carbon::parse($this->close_at)->isPast();
     }
+
+    //==================
+
+    public function openedAttempts($student_id = null) {
+        $result = StudentAttempt::where('test_id', $this->id)->where('expire_at', '>', Carbon::now());
+        if (!is_null($student_id)) $result->where('student_id', $student_id);
+        return $result->orderBy('id', 'desc')->get();
+    }
+
+    public function closedAttempts($student_id = null) {
+        $result = StudentAttempt::where('test_id', $this->id)->where('expire_at', '<', Carbon::now());
+        if (!is_null($student_id)) $result->where('student_id', $student_id);
+        return $result->orderBy('id', 'desc')->get();
+    }
+
+    public function hasResultStudents() {
+        $attempts = StudentAttempt::groupBy('student_id')->where('test_id', $this->id)->where('expire_at', '<', Carbon::now())->get();
+        
+        $students = [];
+
+        foreach ($attempts as $attempt) {
+            array_push($students, $attempt->student);
+        }
+
+        return $students;
+    }
 }

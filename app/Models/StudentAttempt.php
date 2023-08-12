@@ -22,6 +22,10 @@ class StudentAttempt extends Model
         return $this->belongsTo(Test::class, 'test_id');
     }
 
+    public function student() {
+        return $this->belongsTo(Student::class, 'student_id');
+    }
+
     public function calcMarks() {
         if (!is_null($this->finished_at)) return $this->marks;
 
