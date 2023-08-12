@@ -1,4 +1,4 @@
-@extends('student.student')
+@extends('student.student-bt5')
 
 @section('content')
     <div class="h-100 w-100 bg-dark" style="background-image: url('{{ asset('assets/student/images/bg.jpg') }}');">

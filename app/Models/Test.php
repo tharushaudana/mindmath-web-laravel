@@ -63,6 +63,30 @@ class Test extends Model
         return Carbon::parse($this->close_at)->isPast();
     }
 
+    public static function ongoingTests() {
+        $all = Test::where('open_at', '<=', Carbon::now())->where('close_at', '>', Carbon::now())->get();
+
+        $tests = [];
+
+        foreach ($all as $a) {
+            if (!is_null($a->config->id)) array_push($tests, $a);
+        }
+
+        return $tests;
+    }
+
+    public static function upcommingTests() {
+        $all = Test::where('open_at', '>', Carbon::now())->get();
+
+        $tests = [];
+
+        foreach ($all as $a) {
+            if (!is_null($a->config->id)) array_push($tests, $a);
+        }
+
+        return $tests;
+    }
+
     //==================
 
     public function openedAttempts($student_id = null) {

@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="{{ asset('assets/student/css/nucleo-icons.css') }}">
   <link href="{{ asset('assets/student/css/nucleo-svg.css') }}" rel="stylesheet" />
   <!-- Font Awesome Icons -->
-  <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="{{ asset('assets/admin/plugins/fontawesome-free-6.4.2/css/all.min.css') }}">
   <link href="{{ asset('assets/student/css/nucleo-svg.css') }}" rel="stylesheet" />
   <!-- CSS Files -->
   <link id="pagestyle" href="{{ asset('assets/student/css/argon-dashboard.css?v=2.0.4') }}" rel="stylesheet" />
@@ -196,7 +196,7 @@
     <!-- End Navbar -->
     <div class="container-fluid py-4">
 
-        <div style="height: 100vh;">
+        <div style="min-height: 100vh;">
             @yield('content')
         </div>
 
