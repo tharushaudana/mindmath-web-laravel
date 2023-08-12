@@ -83,7 +83,7 @@
                         </div>
                     </div>
 
-                    <div class="mt-4" id="answers-container" style="display: {{ $question->isExpired($test->config->dur_per) ? 'none' : 'block' }};">
+                    <div class="mt-4">
                         @livewire('student.test.auto-mcq-answer-box', [
                             'question' => $question,
                             'test' => $test,
@@ -91,28 +91,9 @@
                         ])
                     </div>
 
-                    <div class="mt-5" id="expired-container" style="display: {{ $question->isExpired($test->config->dur_per) ? 'block' : 'none' }};">
-                        <h5 class="text-danger" style="font-weight: bold;" align="center">Question Expired!</h5>
-                        <p class="text-danger" style="font-size: 12px;" align="center">You can't answer to this question. Please click on the <b>Next</b> button for load next question.</p>
-                    </div>
-
                     @push('scripts')
-                    <script>
-                        const durPer = {{ $test->config->dur_per }};
-
-                        var qMillis = {{ $question->timeLeft($test->config->dur_per) }} * 1000;
-                        
+                    <script>                        
                         var tSecs = {{ \Carbon\Carbon::parse($attempt->expire_at)->diffInSeconds(\Carbon\Carbon::now()) }};
-
-                        const qInterval = setInterval(() => {
-                            qMillis -= 10;
-
-                            if (qMillis == 0) {
-                                $('#answers-container').hide();
-                                $('#expired-container').show();
-                                clearInterval(qInterval);
-                            }
-                        }, 10);
                             
                         const tInterval = setInterval(() => {
                             tSecs--;
