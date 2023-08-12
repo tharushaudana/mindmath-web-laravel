@@ -66,7 +66,7 @@ class Test extends Model
     //==================
 
     public function openedAttempts($student_id = null) {
-        $result = StudentAttempt::where('test_id', $this->id)->where('expire_at', '>', Carbon::now());
+        $result = StudentAttempt::where('test_id', $this->id)->where('finished_at', null)->where('expire_at', '>', Carbon::now());
         if (!is_null($student_id)) $result->where('student_id', $student_id);
         return $result->orderBy('id', 'desc')->get();
     }
