@@ -27,7 +27,7 @@
               <div class="numbers">
                 <p class="text-sm mb-0 text-uppercase font-weight-bold">Today is</p>
                 <h5 class="font-weight-bolder">
-                  {{ now()->format('F j, Y'); }}
+                  {{ now()->format('F j, Y') }}
                 </h5>
                 <p class="mb-0">
                   <span class="text-success text-sm font-weight-bolder">+55%</span>
@@ -141,31 +141,73 @@
         <div class="card">
           <div class="card-header pb-0 p-3">
             <div class="d-flex align-items-center">
+                @if (count($ongoingTests) > 0)
                 <span class="text-warning"><i class="fa-solid fa-circle fa-beat-fade"></i></span>
+                @endif
                 <div style="width: 10px;"></div>
                 <h6 class="mb-0">Ongoing Tests</h6>
             </div>
           </div>
           <div class="card-body p-3">
             <ul class="list-group">
-                @foreach ($ongoingTests as $test)
-                <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
-                    <div class="d-flex align-items-center">
-                      <div class="icon icon-shape icon-sm me-3 bg-gradient-dark shadow text-center">
-                        <i class="ni ni-single-copy-04 text-white opacity-10"></i>
-                      </div>
-                      <div class="d-flex flex-column">
-                        <h6 class="mb-1 text-dark text-sm">{{ $test->name }}</h6>
-                        <span class="text-xs">{!! $me->attempts($test)->count() > 0 ? '<span class="text-success">Attempted</span>' : '<span class="text-danger">Not Attempted</span>' !!}, <span class="font-weight-bold">{{ $test->max_attempts - $me->attempts($test)->count() }} attempts left</span></span>
-                      </div>
-                    </div>
-                    <div class="d-flex">
-                      <a href="{{ route('student.test', $test->id) }}" target="_blank"><button class="btn btn-link btn-icon-only btn-rounded btn-sm text-dark icon-move-right my-auto"><i class="ni ni-bold-right" aria-hidden="true"></i></button></a>
-                    </div>
-                </li>
-                @endforeach
+                @if (count($ongoingTests) > 0)
+                    @foreach ($ongoingTests as $test)
+                    <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                        <div class="d-flex align-items-center">
+                        <div class="icon icon-shape icon-sm me-3 bg-gradient-dark shadow text-center">
+                            <i class="ni ni-single-copy-04 text-white opacity-10"></i>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <h6 class="mb-1 text-dark text-sm">{{ $test->name }}</h6>
+                            <span class="text-xs">{!! $me->attempts($test)->count() > 0 ? '<span class="text-success">Attempted</span>' : '<span class="text-danger">Not Attempted</span>' !!}, <span class="font-weight-bold">{{ $test->max_attempts - $me->attempts($test)->count() }} attempts left</span></span>
+                        </div>
+                        </div>
+                        <div class="d-flex">
+                        <a href="{{ route('student.test', $test->id) }}" target="_blank"><button class="btn btn-link btn-icon-only btn-rounded btn-sm text-dark icon-move-right my-auto"><i class="ni ni-bold-right" aria-hidden="true"></i></button></a>
+                        </div>
+                    </li>
+                    @endforeach
+                @else
+                    <p class="text-muted">Not yet...</p>
+                @endif
             </ul>
           </div>
+        </div>
+
+        <div class="mt-3"></div>
+
+        <div class="card">
+            <div class="card-header pb-0 p-3">
+              <div class="d-flex align-items-center">
+                  <span class="text-primary"><i class="fa-solid fa-lock"></i></span>
+                  <div style="width: 10px;"></div>
+                  <h6 class="mb-0">Upcomming Tests</h6>
+              </div>
+            </div>
+            <div class="card-body p-3 opacity-8">
+              <ul class="list-group">
+                  @if (count($upcommingTests) > 0)
+                      @foreach ($upcommingTests as $test)
+                      <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                          <div class="d-flex align-items-center">
+                          <div class="icon icon-shape icon-sm me-3 bg-gradient-dark shadow text-center">
+                              <i class="ni ni-single-copy-04 text-white opacity-10"></i>
+                          </div>
+                          <div class="d-flex flex-column">
+                              <h6 class="mb-1 text-dark text-sm">{{ $test->name }}</h6>
+                              <span class="text-xs">Sheduled to <b>{{ \Carbon\Carbon::parse($test->open_at)->format('F j \a\t g:i A') }}</b></span>
+                          </div>
+                          </div>
+                          <div class="d-flex">
+                          <a href="{{ route('student.test', $test->id) }}" target="_blank"><button class="btn btn-link btn-icon-only btn-rounded btn-sm text-dark icon-move-right my-auto"><i class="ni ni-bold-right" aria-hidden="true"></i></button></a>
+                          </div>
+                      </li>
+                      @endforeach
+                  @else
+                      <p class="text-muted">Not yet...</p>
+                  @endif
+              </ul>
+            </div>
         </div>
     </div>
   </div>
