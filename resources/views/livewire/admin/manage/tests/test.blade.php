@@ -62,7 +62,7 @@
                             <td>{{ $student->id }}</td>
                             <td>{{ $student->name }}</td>
                             <td>{{ $student->attempts($test)->count() }}</td>
-                            <td><button class="btn btn-secondary">View Marks</button></td>
+                            <td><button class="btn btn-secondary" onclick="showMarksModel({{ $student->id }}, '{{ $student->name }}')">View Marks</button></td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -71,6 +71,47 @@
         </div>
     </div>
     
+    <div class="modal fade" id="marksModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="marksModalTitle">Attempt Data</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3"></div>
+                    <div id="marksModalContent">
+                        @if (!is_null($selectedStudentId))
+                        <table id="tableMarks" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#Attempt ID</th>
+                                    <th>Marks</th>
+                                    <th>Duration Taken</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($test->closedAttempts($selectedStudentId) as $attempt)
+                                <tr>
+                                    <td>{{ $attempt->id }}</td>
+                                    <td><span class="{{ $attempt->calcMarks() > 0 ? 'badge bg-primary' : ''}}">{{ $attempt->calcMarks() }} %</span></td>
+                                    <td>{!! is_null($attempt->finished_at) ? '<span class="text-muted">AUTO FINISHED</span>' : \Carbon\Carbon::parse($attempt->finished_at)->diffForHumans($attempt->created_at) !!}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                        @endif
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @push('scripts')
     <script>
     
@@ -83,9 +124,14 @@
         autoWidth: false,
         responsive: true,
     });
+
+    function showMarksModel(studentId, studentName) {
+        $('#marksModalContent').html('<p align="center"><span style="font-size: 30px;"><i class="fa-solid fa-spinner fa-spin-pulse"></i></span></p>');
+        $('#marksModal').modal();
+        @this.selectedStudentId = studentId;
+    }
     
     </script>
-    
     @endpush
     
 </div>

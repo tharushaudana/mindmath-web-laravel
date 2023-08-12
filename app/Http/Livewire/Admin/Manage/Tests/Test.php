@@ -9,6 +9,8 @@ class Test extends Component
 {
     public TestModel $test; 
 
+    public $selectedStudentId = null;
+
     public function render()
     {
         return view('livewire.admin.manage.tests.test', [
