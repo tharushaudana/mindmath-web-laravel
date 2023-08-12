@@ -32,7 +32,7 @@ class McqTest extends Model
     }
 
     public function totalDurationInSecs() {
-        return $this->dur_per * $this->num_questions + $this->dur_extra;
+        return $this->dur_per * $this->num_questions + ($this->dur_extra * 60);
         //return 20;
     }
 }
