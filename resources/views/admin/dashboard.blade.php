@@ -3,5 +3,5 @@
 @section('title', 'Dashboard')
 
 @section('content')
-    hello
+    Not completed yet :(
 @endsection

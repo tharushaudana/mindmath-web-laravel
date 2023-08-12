@@ -19,7 +19,7 @@
 
           <p class="text-muted text-center" style="font-size: 12px;">{{ Auth::user()->email }}</p>
 
-          <a href="#" class="btn btn-danger btn-block"><b>Logout</b></a>
+          <a href="{{ route('admin.login') }}" class="btn btn-danger btn-block"><b>Logout</b></a>
         </div>
         <!-- /.card-body -->
       </div>

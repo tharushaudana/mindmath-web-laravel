@@ -52,7 +52,7 @@
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="index3.html" class="brand-link">
+    <a href="{{ route('admin.dashboard') }}" class="brand-link">
       <img src="{{  asset('assets/admin/dist/img/logo.png') }}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
       <span class="brand-text font-weight-light">MindMath</span>
     </a>
@@ -73,14 +73,26 @@
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <li class="nav-item">
+            <a href="{{ route('admin.dashboard') }}" class="nav-link @if(request()->route()->getName() == 'admin.dashboard') active @endif">
+              <i class="fas fa-gauge nav-icon"></i>
+              <p>Dashboard</p>
+            </a>
+          </li>
+          <li class="nav-item">
             <a href="{{ route('admin.manage.tests') }}" class="nav-link @if(request()->route()->getName() == 'admin.manage.tests') active @endif">
-              <i class="fas fa-plus"></i>&nbsp;
+              <i class="fas fa-bolt nav-icon"></i>
               <p>Tests</p>
             </a>
           </li>
           <li class="nav-item">
+            <a href="{{ route('admin.manage.students') }}" class="nav-link @if(request()->route()->getName() == 'admin.manage.students') active @endif">
+              <i class="fa-solid fa-school nav-icon"></i>
+              <p>Students</p>
+            </a>
+          </li>
+          <li class="nav-item">
             <a href="{{ route('admin.manage.admins') }}" class="nav-link @if(request()->route()->getName() == 'admin.manage.admins') active @endif">
-              <i class="fa-solid fa-users"></i>&nbsp;
+              <i class="fa-solid fa-users nav-icon"></i>
               <p>Admins</p>
             </a>
           </li>

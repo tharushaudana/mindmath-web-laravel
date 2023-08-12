@@ -36,7 +36,7 @@
         </div>
         @endif
     
-        <div class="card card-success card-outline">
+        <div class="card card-success card-outline" wire:ignore>
             <div class="card-header border-0">
                 <div class="d-flex justify-content-between">
                     <div class="d-flex align-items-center">
@@ -89,7 +89,7 @@
                                 <tr>
                                     <th>#Attempt ID</th>
                                     <th>Marks</th>
-                                    <th>Duration Taken</th>
+                                    <th>Finished At</th>
                                 </tr>
                             </thead>
                             <tbody>

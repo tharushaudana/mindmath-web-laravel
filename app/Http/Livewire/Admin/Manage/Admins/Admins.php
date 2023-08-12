@@ -27,6 +27,8 @@ class Admins extends Component
 
         $invitation->save();
 
+        $this->showCreateInvitationForm(false);
+
         $this->fireAlert('success', 'Invitation Created Successfully.');
         $this->inviteEmail = '';
     }
