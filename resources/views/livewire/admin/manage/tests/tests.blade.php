@@ -126,7 +126,7 @@
                     </div>
                 </div>
 
-                @if (!is_null($test->type))
+                @if (!is_null($test->type) && !is_null($config))
                     @if ($test->type->name == 'mcq')
                         @include('livewire.admin.manage.tests.configs.mcq')
                     @endif
