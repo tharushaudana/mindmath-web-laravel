@@ -1,17 +1,30 @@
 @extends('student.student-dashboard')
 
+@section('pagename', 'Dashboard')
+
 @section('content')
 
 @php
     $currentTime = now();
-    $hour = $currentTime->hour;
 
+    $hour = $currentTime->hour;
     if ($hour >= 5 && $hour < 12) {
         $greeting = 'Good morning';
     } elseif ($hour >= 12 && $hour < 18) {
         $greeting = 'Good afternoon';
     } else {
         $greeting = 'Good evening';
+    }
+
+    $weekNumber = $currentTime->weekOfMonth;
+    if ($weekNumber == 1) {
+        $weekNumberSuffix = 'st';
+    } elseif ($weekNumber == 2) {
+        $weekNumberSuffix = 'nd';
+    } elseif ($weekNumber == 3) {
+        $weekNumberSuffix = 'rd';
+    } else {
+        $weekNumberSuffix = 'th';
     }
 @endphp
 
@@ -30,8 +43,8 @@
                   {{ now()->format('F j, Y') }}
                 </h5>
                 <p class="mb-0">
-                  <span class="text-success text-sm font-weight-bolder">+55%</span>
-                  since yesterday
+                  <span class="text-success text-sm font-weight-bolder">{{ $weekNumber }}<sup>{{ $weekNumberSuffix }}</sup></span>
+                  week of month
                 </p>
               </div>
             </div>
@@ -52,16 +65,18 @@
               <div class="numbers">
                 <p class="text-sm mb-0 text-uppercase font-weight-bold">Last Attempted Test</p>
                 <h5 class="font-weight-bolder">
-                  Test No 04
+                  {{ $me->latestAttempt()->test->name }}
                 </h5>
                 <p class="mb-0">
-                  <span class="text-success text-sm font-weight-bolder">MCQ</span>
+                  <span class="text-success text-sm font-weight-bolder">
+                    {{ strtoupper($me->latestAttempt()->test->type->name) }}
+                  </span>
                 </p>
               </div>
             </div>
             <div class="col-4 text-end">
               <div class="icon icon-shape bg-gradient-danger shadow-danger text-center rounded-circle">
-                <i class="ni ni-world text-lg opacity-10" aria-hidden="true"></i>
+                <i class="ni ni-single-copy-04 text-lg opacity-10" aria-hidden="true"></i>
               </div>
             </div>
           </div>
@@ -120,10 +135,10 @@
   </div>
 
   <div class="row mt-4">
-    <div class="col-lg-7 mb-lg-0 mb-4">
-      <div class="card z-index-2 h-100">
+    <div class="col-md-7 mb-lg-0 mb-4">
+      <div class="card z-index-2">
         <div class="card-header pb-0 pt-3 bg-transparent">
-          <h6 class="text-capitalize">Sales overview</h6>
+          <h6 class="text-capitalize">MCQ marks overview</h6>
           <p class="text-sm mb-0">
             <i class="fa fa-arrow-up text-success"></i>
             <span class="font-weight-bold">4% more</span> in 2021
@@ -137,7 +152,7 @@
       </div>
     </div>
 
-    <div class="col-lg-5">
+    <div class="col-md-5">
         <div class="card">
           <div class="card-header pb-0 p-3">
             <div class="d-flex align-items-center">

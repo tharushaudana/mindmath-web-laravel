@@ -23,7 +23,7 @@ class LoginRegister extends Component
     {
         if ($this->showRegisterForm) {
             return [
-                'name' => ['required'],
+                'name' => ['required', 'min:5'],
                 'email' => ['required', 'email', 'unique:students,email'],
                 'grade' => ['required', 'exists:grades,id'],
                 'password' => ['required', 'min:8'],

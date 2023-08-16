@@ -32,4 +32,8 @@ class Student extends Authenticatable
     public function currentAttempt() {
         return StudentAttempt::where('student_id', $this->id)->where('finished_at', null)->where('expire_at', '>', Carbon::now())->first();
     }
+
+    public function latestAttempt() {
+        return StudentAttempt::where('student_id', $this->id)->orderBy('id', 'desc')->first();
+    }
 }
