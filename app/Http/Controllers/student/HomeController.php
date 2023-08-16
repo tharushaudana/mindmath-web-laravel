@@ -54,6 +54,9 @@ class HomeController extends Controller
 
     function wholeMarksChange($marks) {
         $totalTests = count($marks);
+
+        if ($totalTests < 2) return 0;
+
         $totalPercentageChange = 0;
   
         for ($i = 1; $i < $totalTests; $i++) {
