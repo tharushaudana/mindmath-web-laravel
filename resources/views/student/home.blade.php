@@ -61,6 +61,7 @@
       <div class="card">
         <div class="card-body p-3">
           <div class="row">
+            @if (!is_null($me->latestAttempt()))
             <div class="col-8">
               <div class="numbers">
                 <p class="text-sm mb-0 text-uppercase font-weight-bold">Last Attempted Test</p>
@@ -74,6 +75,7 @@
                 </p>
               </div>
             </div>
+            @endif
             <div class="col-4 text-end">
               <div class="icon icon-shape bg-gradient-danger shadow-danger text-center rounded-circle">
                 <i class="ni ni-single-copy-04 text-lg opacity-10" aria-hidden="true"></i>
